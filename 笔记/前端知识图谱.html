@@ -1,0 +1,1363 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>body {
+  max-width: 980px;
+  border: 1px solid #ddd;
+  outline: 1300px solid #fff;
+  margin: 16px auto;
+}
+
+body .markdown-body
+{
+  padding: 45px;
+}
+
+@font-face {
+  font-family: fontawesome-mini;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+@font-face {
+  font-family: octicons-anchor;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+.markdown-body {
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  color: #333333;
+  overflow: hidden;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.markdown-body a {
+  background: transparent;
+}
+
+.markdown-body a:active,
+.markdown-body a:hover {
+  outline: 0;
+}
+
+.markdown-body b,
+.markdown-body strong {
+  font-weight: bold;
+}
+
+.markdown-body mark {
+  background: #ff0;
+  color: #000;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.markdown-body sub,
+.markdown-body sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+.markdown-body sup {
+  top: -0.5em;
+}
+.markdown-body sub {
+  bottom: -0.25em;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+.markdown-body img {
+  border: 0;
+}
+
+.markdown-body hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
+}
+
+.markdown-body pre {
+  overflow: auto;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+.markdown-body input {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+
+.markdown-body html input[disabled] {
+  cursor: default;
+}
+
+.markdown-body input {
+  line-height: normal;
+}
+
+.markdown-body input[type="checkbox"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body .codehilitetable {
+  border: 0;
+  border-spacing: 0;
+}
+
+.markdown-body .codehilitetable tr {
+  border: 0;
+}
+
+.markdown-body .codehilitetable pre,
+.markdown-body .codehilitetable div.codehilite {
+  margin: 0;
+}
+
+.markdown-body .linenos,
+.markdown-body .code,
+.markdown-body .codehilitetable td {
+  border: 0;
+  padding: 0;
+}
+
+.markdown-body td:not(.linenos) .linenodiv {
+  padding: 0 !important;
+}
+
+.markdown-body .code {
+  width: 100%;
+}
+
+.markdown-body .linenos div pre,
+.markdown-body .linenodiv pre,
+.markdown-body .linenodiv {
+  border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-top-left-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.markdown-body .code div pre,
+.markdown-body .code div {
+  border: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-top-right-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.markdown-body * {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.markdown-body input {
+  font: 13px Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.4;
+}
+
+.markdown-body a {
+  color: #4183c4;
+  text-decoration: none;
+}
+
+.markdown-body a:hover,
+.markdown-body a:focus,
+.markdown-body a:active {
+  text-decoration: underline;
+}
+
+.markdown-body hr {
+  height: 0;
+  margin: 15px 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.markdown-body hr:before,
+.markdown-body hr:after {
+  display: table;
+  content: " ";
+}
+
+.markdown-body hr:after {
+  clear: both;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+}
+
+.markdown-body h1 {
+  font-size: 30px;
+}
+
+.markdown-body h2 {
+  font-size: 21px;
+}
+
+.markdown-body h3 {
+  font-size: 16px;
+}
+
+.markdown-body h4 {
+  font-size: 14px;
+}
+
+.markdown-body h5 {
+  font-size: 12px;
+}
+
+.markdown-body h6 {
+  font-size: 11px;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ul ul ol,
+.markdown-body ul ol ol,
+.markdown-body ol ul ol,
+.markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body code,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body kbd {
+  background-color: #e7e7e7;
+  background-image: -moz-linear-gradient(#fefefe, #e7e7e7);
+  background-image: -webkit-linear-gradient(#fefefe, #e7e7e7);
+  background-image: linear-gradient(#fefefe, #e7e7e7);
+  background-repeat: repeat-x;
+  border-radius: 2px;
+  border: 1px solid #cfcfcf;
+  color: #000;
+  padding: 3px 5px;
+  line-height: 10px;
+  font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  display: inline-block;
+}
+
+.markdown-body>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+.markdown-body .headeranchor-link {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  padding-right: 6px;
+  padding-left: 30px;
+  margin-left: -30px;
+}
+
+.markdown-body .headeranchor-link:focus {
+  outline: none;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.markdown-body h1 .headeranchor,
+.markdown-body h2 .headeranchor,
+.markdown-body h3 .headeranchor,
+.markdown-body h4 .headeranchor,
+.markdown-body h5 .headeranchor,
+.markdown-body h6 .headeranchor {
+  display: none;
+  color: #000;
+  vertical-align: middle;
+}
+
+.markdown-body h1:hover .headeranchor-link,
+.markdown-body h2:hover .headeranchor-link,
+.markdown-body h3:hover .headeranchor-link,
+.markdown-body h4:hover .headeranchor-link,
+.markdown-body h5:hover .headeranchor-link,
+.markdown-body h6:hover .headeranchor-link {
+  height: 1em;
+  padding-left: 8px;
+  margin-left: -30px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.markdown-body h1:hover .headeranchor-link .headeranchor,
+.markdown-body h2:hover .headeranchor-link .headeranchor,
+.markdown-body h3:hover .headeranchor-link .headeranchor,
+.markdown-body h4:hover .headeranchor-link .headeranchor,
+.markdown-body h5:hover .headeranchor-link .headeranchor,
+.markdown-body h6:hover .headeranchor-link .headeranchor {
+  display: inline-block;
+}
+
+.markdown-body h1 {
+  padding-bottom: 0.3em;
+  font-size: 2.25em;
+  line-height: 1.2;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h2 {
+  padding-bottom: 0.3em;
+  font-size: 1.75em;
+  line-height: 1.225;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h3 {
+  font-size: 1.5em;
+  line-height: 1.43;
+}
+
+.markdown-body h4 {
+  font-size: 1.25em;
+}
+
+.markdown-body h5 {
+  font-size: 1em;
+}
+
+.markdown-body h6 {
+  font-size: 1em;
+  color: #777;
+}
+
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body dl,
+.markdown-body table,
+.markdown-body pre,
+.markdown-body .admonition {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body hr {
+  height: 4px;
+  padding: 0;
+  margin: 16px 0;
+  background-color: #e7e7e7;
+  border: 0 none;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body li>p {
+  margin-top: 16px;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  padding: 0;
+  margin-top: 16px;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.markdown-body dl dd {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+  padding: 0 15px;
+  color: #777;
+  border-left: 4px solid #ddd;
+}
+
+.markdown-body blockquote>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: normal;
+  word-break: keep-all;
+}
+
+.markdown-body table th {
+  font-weight: bold;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.markdown-body code,
+.markdown-body samp {
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
+}
+
+.markdown-body code:before,
+.markdown-body code:after {
+  letter-spacing: -0.2em;
+  content: "\00a0";
+}
+
+.markdown-body pre>code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+
+.markdown-body .codehilite {
+  margin-bottom: 16px;
+}
+
+.markdown-body .codehilite pre,
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+}
+
+.markdown-body .codehilite pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body pre {
+  word-wrap: normal;
+}
+
+.markdown-body pre code {
+  display: inline;
+  max-width: initial;
+  padding: 0;
+  margin: 0;
+  overflow: initial;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+
+.markdown-body pre code:before,
+.markdown-body pre code:after {
+  content: normal;
+}
+
+/* Admonition */
+.markdown-body .admonition {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  position: relative;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+  border-left: 6px solid #333;
+  padding: 10px 10px 10px 30px;
+}
+
+.markdown-body .admonition table {
+  color: #333;
+}
+
+.markdown-body .admonition p {
+  padding: 0;
+}
+
+.markdown-body .admonition-title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.markdown-body .admonition>.admonition-title {
+  color: #333;
+}
+
+.markdown-body .attention>.admonition-title {
+  color: #a6d796;
+}
+
+.markdown-body .caution>.admonition-title {
+  color: #d7a796;
+}
+
+.markdown-body .hint>.admonition-title {
+  color: #96c6d7;
+}
+
+.markdown-body .danger>.admonition-title {
+  color: #c25f77;
+}
+
+.markdown-body .question>.admonition-title {
+  color: #96a6d7;
+}
+
+.markdown-body .note>.admonition-title {
+  color: #d7c896;
+}
+
+.markdown-body .admonition:before,
+.markdown-body .attention:before,
+.markdown-body .caution:before,
+.markdown-body .hint:before,
+.markdown-body .danger:before,
+.markdown-body .question:before,
+.markdown-body .note:before {
+  font: normal normal 16px fontawesome-mini;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  line-height: 1.5;
+  color: #333;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+.markdown-body .admonition:before {
+  content: "\f056\00a0";
+  color: 333;
+}
+
+.markdown-body .attention:before {
+  content: "\f058\00a0";
+  color: #a6d796;
+}
+
+.markdown-body .caution:before {
+  content: "\f06a\00a0";
+  color: #d7a796;
+}
+
+.markdown-body .hint:before {
+  content: "\f05a\00a0";
+  color: #96c6d7;
+}
+
+.markdown-body .danger:before {
+  content: "\f057\00a0";
+  color: #c25f77;
+}
+
+.markdown-body .question:before {
+  content: "\f059\00a0";
+  color: #96a6d7;
+}
+
+.markdown-body .note:before {
+  content: "\f040\00a0";
+  color: #d7c896;
+}
+
+.markdown-body .admonition::after {
+  content: normal;
+}
+
+.markdown-body .attention {
+  border-left: 6px solid #a6d796;
+}
+
+.markdown-body .caution {
+  border-left: 6px solid #d7a796;
+}
+
+.markdown-body .hint {
+  border-left: 6px solid #96c6d7;
+}
+
+.markdown-body .danger {
+  border-left: 6px solid #c25f77;
+}
+
+.markdown-body .question {
+  border-left: 6px solid #96a6d7;
+}
+
+.markdown-body .note {
+  border-left: 6px solid #d7c896;
+}
+
+.markdown-body .admonition>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body .admonition>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* progress bar*/
+.markdown-body .progress {
+  display: block;
+  width: 300px;
+  margin: 10px 0;
+  height: 24px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #ededed;
+  position: relative;
+  box-shadow: inset -1px 1px 3px rgba(0, 0, 0, .1);
+}
+
+.markdown-body .progress-label {
+  position: absolute;
+  text-align: center;
+  font-weight: bold;
+  width: 100%; margin: 0;
+  line-height: 24px;
+  color: #333;
+  text-shadow: 1px 1px 0 #fefefe, -1px -1px 0 #fefefe, -1px 1px 0 #fefefe, 1px -1px 0 #fefefe, 0 1px 0 #fefefe, 0 -1px 0 #fefefe, 1px 0 0 #fefefe, -1px 0 0 #fefefe, 1px 1px 2px #000;
+  -webkit-font-smoothing: antialiased !important;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.markdown-body .progress-bar {
+  height: 24px;
+  float: left;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #96c6d7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 0 rgba(0, 0, 0, .1);
+  background-size: 30px 30px;
+  background-image: -webkit-linear-gradient(
+    135deg, rgba(255, 255, 255, .4) 27%,
+    transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%,
+    transparent 77%, transparent
+  );
+  background-image: -moz-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: -ms-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: -o-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, .4) 27%, transparent 27%,
+    transparent 52%, rgba(255, 255, 255, .4) 52%,
+    rgba(255, 255, 255, .4) 77%, transparent 77%,
+    transparent
+  );
+}
+
+.markdown-body .progress-100plus .progress-bar {
+  background-color: #a6d796;
+}
+
+.markdown-body .progress-80plus .progress-bar {
+  background-color: #c6d796;
+}
+
+.markdown-body .progress-60plus .progress-bar {
+  background-color: #d7c896;
+}
+
+.markdown-body .progress-40plus .progress-bar {
+  background-color: #d7a796;
+}
+
+.markdown-body .progress-20plus .progress-bar {
+  background-color: #d796a6;
+}
+
+.markdown-body .progress-0plus .progress-bar {
+  background-color: #c25f77;
+}
+
+.markdown-body .candystripe-animate .progress-bar{
+  -webkit-animation: animate-stripes 3s linear infinite;
+  -moz-animation: animate-stripes 3s linear infinite;
+  animation: animate-stripes 3s linear infinite;
+}
+
+@-webkit-keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+@-moz-keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+@keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+.markdown-body .gloss .progress-bar {
+  box-shadow:
+    inset 0 4px 12px rgba(255, 255, 255, .7),
+    inset 0 -12px 0 rgba(0, 0, 0, .05);
+}
+
+/* Multimarkdown Critic Blocks */
+.markdown-body .critic_mark {
+  background: #ff0;
+}
+
+.markdown-body .critic_delete {
+  color: #c82829;
+  text-decoration: line-through;
+}
+
+.markdown-body .critic_insert {
+  color: #718c00 ;
+  text-decoration: underline;
+}
+
+.markdown-body .critic_comment {
+  color: #8e908c;
+  font-style: italic;
+}
+
+.markdown-body .headeranchor {
+  font: normal normal 16px octicons-anchor;
+  line-height: 1;
+  display: inline-block;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.headeranchor:before {
+  content: '\f05c';
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item+.task-list-item {
+  margin-top: 3px;
+}
+
+.markdown-body .task-list-item input {
+  margin: 0 4px 0.25em -20px;
+  vertical-align: middle;
+}
+
+/* Media */
+@media only screen and (min-width: 480px) {
+  .markdown-body {
+    font-size:14px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .markdown-body {
+    font-size:16px;
+  }
+}
+
+@media print {
+  .markdown-body * {
+    background: transparent !important;
+    color: black !important;
+    filter:none !important;
+    -ms-filter: none !important;
+  }
+
+  .markdown-body {
+    font-size:12pt;
+    max-width:100%;
+    outline:none;
+    border: 0;
+  }
+
+  .markdown-body a,
+  .markdown-body a:visited {
+    text-decoration: underline;
+  }
+
+  .markdown-body .headeranchor-link {
+    display: none;
+  }
+
+  .markdown-body a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  .markdown-body abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+
+  .markdown-body .ir a:after,
+  .markdown-body a[href^="javascript:"]:after,
+  .markdown-body a[href^="#"]:after {
+    content: "";
+  }
+
+  .markdown-body pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .markdown-body pre,
+  .markdown-body blockquote {
+    border: 1px solid #999;
+    padding-right: 1em;
+    page-break-inside: avoid;
+  }
+
+  .markdown-body .progress,
+  .markdown-body .progress-bar {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .markdown-body .progress {
+    border: 1px solid #ddd;
+  }
+
+  .markdown-body .progress-bar {
+    height: 22px;
+    border-right: 1px solid #ddd;
+  }
+
+  .markdown-body tr,
+  .markdown-body img {
+    page-break-inside: avoid;
+  }
+
+  .markdown-body img {
+    max-width: 100% !important;
+  }
+
+  .markdown-body p,
+  .markdown-body h2,
+  .markdown-body h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .markdown-body h2,
+  .markdown-body h3 {
+    page-break-after: avoid;
+  }
+}
+</style><title>前端知识图谱</title></head><body><article class="markdown-body"><h1 id="_1"><a name="user-content-_1" href="#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>前端知识梳理</h1>
+<h2 id="_2"><a name="user-content-_2" href="#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>基础知识</h2>
+<h3 id="_3"><a name="user-content-_3" href="#_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>浏览器地址栏输入地址到显示页面的步骤</h3>
+<ol>
+<li>地址栏输入资源地址</li>
+<li>浏览器查看缓存，如果资源在缓存中并且新鲜，跳转到解码步骤<ul>
+<li>如果资源未缓存，发起新请求</li>
+<li>已缓存，检查是够新鲜，新鲜则提供给浏览器，否则与服务器进行验证</li>
+<li>检查新鲜通常由Expires和Cache-Control进行控制：<ul>
+<li>HTTP1.0提供Expires，值为一个绝对时间表示环讯新鲜日期</li>
+<li>HTTP1.1提供了Cache-Control：max-age，值为以秒为单位的最大新鲜时间</li>
+</ul>
+</li>
+<li>与服务器进行验证新鲜由Etag HTTP头进行控制</li>
+</ul>
+</li>
+<li>浏览器解析URL获取协议、主机、端口、路径</li>
+<li>浏览器封装HTTP请求(GET)报文</li>
+<li>浏览器获取主机IP地址<ul>
+<li>查看浏览器缓存</li>
+<li>本机缓存</li>
+<li>hosts文件</li>
+<li>路由器缓存</li>
+<li>ISP DNS缓存</li>
+<li>DNS递归查询</li>
+</ul>
+</li>
+<li>打开一个socket与目标IP地址、端口建立TCP链接，进行三次握手：<ul>
+<li>客户端发送一个TCP的SYN=1，SEQ=X的包到服务器</li>
+<li>服务器响应SYN=1，ACK=X+1，SEQ=Y的响应包</li>
+<li>客户端发送ACK=Y+1，SEQ=Z</li>
+</ul>
+</li>
+<li>TCP建立之后发送HTTP请求</li>
+<li>服务器接受请求并解析，将请求转发到服务程序，如虚拟主机使用HTTP Host头部判断请求的服务程序</li>
+<li>服务器检查HTTP请求头是否包含缓存验证信息，如果验证缓存新鲜，则返回304状态码</li>
+<li>处理程序读取完整请求并准备HTTP响应，可能需要查询数据库等操作</li>
+<li>服务器将响应报文通过TCP链接发送回服务器</li>
+<li>浏览器收HTTP响应，然后根据情况选择关闭TCP链接还是保留重用，关闭TCP链接的四次握手如下：<ul>
+<li>主动方发送FIN=1，ACK=Z，SEQ=X的报文</li>
+<li>被动方发送ACK=X+1，SEQ=Z的报文</li>
+<li>被动方发送DIN=1，ACK=X，SEQ=Y的报文</li>
+<li>主动方发送ACK=Y，SEQ=X的报文</li>
+</ul>
+</li>
+<li>浏览器检查响应状态码：1xx,3xx,4xx,5xx与2xx的情况处理不同</li>
+<li>如果资源可缓存，进行缓存</li>
+<li>对响应进行解码（如资源进行了gzip压缩）</li>
+<li>根据资源类型决定如何处理（如资源为HTML）</li>
+<li>解析HTML文档，生成DOM树，下载资源构造CSSOM树，执行JS脚本，无严格先后顺序</li>
+<li>构建DOM树：<ul>
+<li>Tokening：根据HTML规范将字符流解析为标记</li>
+<li>Lexing：词法分析将标记转换为对象并定义属性和规则</li>
+<li>DOM construction：根据HTML标记关系将对象组成DOM树</li>
+</ul>
+</li>
+<li>解析过程中遇到图片、样式表、JS文件则启动下载</li>
+<li>构建CSSOM树：<ul>
+<li>Tokening：字符流解析为标记</li>
+<li>Lexing：根据标记创建节点</li>
+<li>CSSOM：节点创建CSSOM树</li>
+</ul>
+</li>
+<li>根据DOM树和CSSOM树构建渲染树<ul>
+<li>从DOM树的根节点遍历所有可见节点，不可见节点：1）script，meta本身不可见的标签 2）被css隐藏的节点，如display: none;</li>
+<li>对每一个可见节点，找到恰当的CSSOM规则并应用</li>
+<li>发布可见节点的内容和计算样式</li>
+</ul>
+</li>
+<li>JS解析如下<ul>
+<li>浏览器创建Document对象并解析HTML，将解析到的元素和文本节点添加到文档中，此时document.readystate为loading</li>
+<li>HTML解析器遇到没有async和defer的script时，添加到文档中，然后开始解析执行脚本，此过程将导致解析器暂停</li>
+<li>浏览器遇到async属性的脚本时，下载与浏览器解析器并行运行，下载完之后立即执行,不能调用document.write()</li>
+<li>浏览器遇到defer属性的脚本时，下载与浏览器解析器并行运行，下载完之后会延迟到脚本能访问完整文档树时执行（即：DOMCotentLoaded后执行）,不能调用document.write()</li>
+<li>浏览器在Document对象上出发DOMContentLoaded事件</li>
+<li>此时文档解析完成，但浏览器可能还在等待图片等内容加载，等这些内容完成载入并且所有脚本完成载入和执行，document.readyState变为complete,window触发onload事件</li>
+</ul>
+</li>
+<li>显示页面（HTML解析过程中会逐步显示页面）</li>
+</ol>
+<h3 id="http"><a name="user-content-http" href="#http" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HTTP协议</h3>
+<h4 id="http_1"><a name="user-content-http_1" href="#http_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HTTP协议概述</h4>
+<p>是一种被设计成用于获取HTML文件等网络资源的通讯协议。</p>
+<h4 id="http_2"><a name="user-content-http_2" href="#http_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HTTP协议的组成</h4>
+<h5 id="_4"><a name="user-content-_4" href="#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>请求的组成</h5>
+<p><pre><code>GET / HTTP/1.1
+Host: google.com
+Accept-Language: zh-cn
+Connection：Keep-alive
+Cache-Control: max-age=0
+Accept: text/html
+User-Agent: Mozilla/5.0
+Referer: 
+Accept-Encoding: gzip,deflate
+Cookie: 
+If-None-Match: &quot;zfffd-fshfk&quot;
+If-Modified-Since: Wed，01 Sep 2004 13:24:52 GMT
+
+name=jj&amp;pwd=fej
+</code></pre><br />
+- 请求行：Http请求方法，请求路径，HTTP协议版本，CRLF<br />
+- 请求头部<br />
+- 请求体</p>
+<h5 id="_5"><a name="user-content-_5" href="#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>响应的组成</h5>
+<p><pre><code>HTTP/1.1 200 OK
+Date: 
+Server: 
+Last-Modified: 
+ETag:
+Content-Length:
+Xontent-Type: 
+
+{name: &quot;&quot;,age: &quot;&quot;}
+</code></pre><br />
+- 状态行:协议版本号 状态码 状态信息<br />
+- HTTP响应头<br />
+- CRLF<br />
+- 消息实体</p>
+<h4 id="http_3"><a name="user-content-http_3" href="#http_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HTTP协议的基本性质</h4>
+<ol>
+<li>简单的</li>
+<li>可扩展的</li>
+<li>无状态，有会话</li>
+</ol>
+<h4 id="http_4"><a name="user-content-http_4" href="#http_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HTTP请求方法</h4>
+<ol>
+<li>GET：请求服务器发送某个资源</li>
+<li>HEAD：与GET类似，但只返回头部不返回主体</li>
+<li>PUT：请求服务器使用请求的主体部分新建一个文档，若此文档已存在则用此次请求的主体替代它</li>
+<li>POST：用于向服务器输入数据</li>
+<li>TRACE：用于诊断，验证请求是否如愿穿过了请求/响应链</li>
+<li>OPTIONS：请求服务器告知器支持的各种功能</li>
+<li>DELETE：请求服务器删除指定的资源</li>
+</ol>
+<h3 id="_6"><a name="user-content-_6" href="#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>网站性能优化</h3>
+<ul>
+<li>content方面<ul>
+<li>减少HTTP请求：合并文件、CSS精灵、inline image</li>
+<li>减少DNS查询：DNS查询完成完成之前，浏览器不能从这个主机少下载任何东西。方法：DNS缓存，资源分布到恰当数量的主机名，平衡并行下载和DNS查询</li>
+<li>避免重定向：多余的中间访问</li>
+<li>使Ajax可缓存</li>
+<li>非必须组件延迟加载</li>
+<li>未来所需组件预加载</li>
+<li>减少DOM元素数量</li>
+<li>将资源放到不同域下：浏览器对同时从一个域下载资源的数量有限制，增加域可提高并行下载数量</li>
+<li>减少iframe</li>
+<li>尽量不要404</li>
+</ul>
+</li>
+<li>Server方面<ul>
+<li>使用CDN</li>
+<li>添加Expires和Cache-Control响应头</li>
+<li>进行gzip压缩</li>
+<li>配置ETag</li>
+<li>Ajax使用GET进行请求（Yahoo有推荐这么做）</li>
+<li>避免空src的img标签</li>
+<li>Flush Buffer Early</li>
+</ul>
+</li>
+<li>Cookie<ul>
+<li>减少Cookie大小</li>
+<li>引入资源的域名不要包含Cookie</li>
+</ul>
+</li>
+<li>CSS方面<ul>
+<li>将样式表放到页面头部</li>
+<li>不实用CSS表达式</li>
+<li>不实用@import</li>
+<li>不实用IE filter</li>
+<li>压缩代码</li>
+</ul>
+</li>
+<li>JavaScript方面<ul>
+<li>将脚本放到页面底部</li>
+<li>将JavaScript和CSS作为文件从外部引入（少量的代码直接放在页面中）</li>
+<li>压缩代码</li>
+<li>删除不需要的脚本</li>
+<li>减少DOM访问</li>
+<li>合理设计事件监听</li>
+</ul>
+</li>
+<li>图片方面<ul>
+<li>优化图片，压缩图片</li>
+<li>优化CSS精灵</li>
+<li>不要在HTML中拉伸图片</li>
+<li>保证favicon小并且可缓存</li>
+</ul>
+</li>
+<li>移动方面<ul>
+<li>保证组件足够小，25kb</li>
+<li>将组件到打包成多份文档</li>
+</ul>
+</li>
+</ul>
+<h3 id="seo"><a name="user-content-seo" href="#seo" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SEO</h3>
+<ul>
+<li>合理的title,description,keywords<ul>
+<li>title: 强调重点，不同页面title要有所不同</li>
+<li>description: 对页面内容高度概括，长度合适，不要堆砌关键字，不同页面有所不同</li>
+<li>keywords: 列举出重要的关键字</li>
+</ul>
+</li>
+<li>语义化的HTML代码，符合W3C规范：让搜索引擎容易理解网页</li>
+<li>重要HTML代码放在最前面：搜索引擎抓取HTML顺序从上到下，并且对抓取长度有限制，保证重要内容被抓取</li>
+<li>重要内容不要使用JS输出：爬虫不会执行JS获取内容</li>
+<li>少用iframe：搜索引擎不会抓取iframe中的内容</li>
+<li>非装饰性img必须加上alt</li>
+<li>提高网站速度：网站速度是搜索引擎排序的重要指标</li>
+<li>扁平化的HTML结构：保证HTML结构尽量简单</li>
+<li>对网站首页中的链接不要过少或过多：首页权重大</li>
+</ul>
+<h3 id="_7"><a name="user-content-_7" href="#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>基础算法</h3>
+<h2 id="html"><a name="user-content-html" href="#html" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HTML</h2>
+<h3 id="doctype"><a name="user-content-doctype" href="#doctype" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>DOCTYPE作用</h3>
+<ol>
+<li>&lt;!DOCTYPE&gt; 声明必须位于文档头部，在html标签之前，在HTML5中不区分大小写</li>
+<li>不是一个HTML标签，适用于告诉浏览器当前HTML版本的指令</li>
+<li>现代浏览器通过检查DOCTYPE决定HTML布局引擎是使用兼容模式还是标准模式来对文档进行渲染</li>
+<li>在HTML4.01中doctype声明指向一个DTD，由于HTML4.01基于SGML，所以DTD指定了标记规则以保证浏览器正确渲染内容</li>
+<li>HTML5不基于SGML，所以不用DTD</li>
+</ol>
+<h3 id="_8"><a name="user-content-_8" href="#_8" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>语义化</h3>
+<ul>
+<li>包括HTML标签的语义化以及CSS命名的语义化<ul>
+<li>HTML标签语义化：使用包含语义的标签恰当的表示文档结构</li>
+<li>CSS语义化：为HTML标签添加有意义的class</li>
+</ul>
+</li>
+<li>好处：<ul>
+<li>在没有样式的情况下任然能保持清晰的结构</li>
+<li>盲人使用读屏器更好的阅读</li>
+<li>搜索引擎能更好的理解页面，有利于收录</li>
+<li>增加项目的可持续运作和维护</li>
+</ul>
+</li>
+</ul>
+<h3 id="_9"><a name="user-content-_9" href="#_9" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>常用标签</h3>
+<p>行内标签：<br />
+a,abbr,address,video,audio,b,i,em,strong,img,button,input,select,option,span,label,textarea<br />
+块级标签：<br />
+article,aside,div,h1-h6,blockquote,body,html,canvas,command,li,ol,ul,dl,dt,dd,table,th,tr,td,p,nav,iframe,hr,code<br />
+空标签：<br />
+meta,link,title,br,hr</p>
+<h3 id="_10"><a name="user-content-_10" href="#_10" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>媒体</h3>
+<h3 id="sql"><a name="user-content-sql" href="#sql" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>SQL</h3>
+<h3 id="_11"><a name="user-content-_11" href="#_11" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>存储</h3>
+<h2 id="css"><a name="user-content-css" href="#css" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>CSS</h2>
+<h3 id="css_1"><a name="user-content-css_1" href="#css_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>CSS选择器规则</h3>
+<h3 id="bfc"><a name="user-content-bfc" href="#bfc" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>BFC</h3>
+<p>(Block Formating Context)块级格式化上下文</p>
+<h3 id="_12"><a name="user-content-_12" href="#_12" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>布局</h3>
+<h4 id="_13"><a name="user-content-_13" href="#_13" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>浮动布局</h4>
+<h4 id="position"><a name="user-content-position" href="#position" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>position布局</h4>
+<h4 id="display"><a name="user-content-display" href="#display" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>display布局</h4>
+<h3 id="flex"><a name="user-content-flex" href="#flex" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>flex布局</h3>
+<h3 id="_14"><a name="user-content-_14" href="#_14" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>媒体查询</h3>
+<h3 id="css_2"><a name="user-content-css_2" href="#css_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>CSS预处理</h3>
+<h3 id="transition"><a name="user-content-transition" href="#transition" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>transition</h3>
+<ul>
+<li>transition-property</li>
+<li>transition-duration</li>
+<li>transition-timing-function: linear,ease,ease-in,ease-out,ease-in-out,cubic-bezier(n,n,n,n)</li>
+<li>transition-delay </li>
+</ul>
+<h3 id="transform"><a name="user-content-transform" href="#transform" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>transform</h3>
+<ul>
+<li>transform<ul>
+<li>translate(x,y)</li>
+<li>translate3d(x,y,z)</li>
+<li>translateX(x)</li>
+<li>translatey(y)</li>
+<li>translateZ(z)</li>
+<li>scale(x,y)</li>
+<li>scale3d(x,y,z)</li>
+<li>scaleX(x)</li>
+<li>scaleY(y)</li>
+<li>scaleZ</li>
+<li>rotate(angel)</li>
+<li>rotate3d(angel,angel,angel)</li>
+<li>rotateX(angel)</li>
+<li>rotateY(angel)</li>
+<li>rotateX(angel)</li>
+<li>skew(x-angel,y-angel)</li>
+<li>skewX(angel)</li>
+<li>skew(angel)</li>
+</ul>
+</li>
+<li>transform-origin: x-axis y-axis z-axis;</li>
+<li>transform-style: flat|preserve-3d;</li>
+<li>perspective: number|none;</li>
+<li>perspective-origin: x-axis|y-axis;</li>
+<li>backface-visiblity: visible|hidden;</li>
+</ul>
+<h3 id="animation"><a name="user-content-animation" href="#animation" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>animation</h3>
+<ul>
+<li>animation-name</li>
+<li>animation-duration</li>
+<li>animation-timing-function</li>
+<li>animation-delay</li>
+<li>animation-iteration-count</li>
+<li>animation-direction</li>
+<li>animation-play-state</li>
+<li>animation-fill-mode</li>
+</ul>
+<h2 id="javascript"><a name="user-content-javascript" href="#javascript" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>JavaScript</h2>
+<h3 id="dom"><a name="user-content-dom" href="#dom" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>DOM</h3>
+<h3 id="bom"><a name="user-content-bom" href="#bom" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>BOM</h3>
+<h3 id="_15"><a name="user-content-_15" href="#_15" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>闭包</h3>
+<h3 id="_16"><a name="user-content-_16" href="#_16" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>原型链</h3>
+<h3 id="_17"><a name="user-content-_17" href="#_17" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>继承</h3>
+<h3 id="this"><a name="user-content-this" href="#this" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>理解this</h3>
+<h3 id="xmlhttprequest"><a name="user-content-xmlhttprequest" href="#xmlhttprequest" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>XMLHttpRequest</h3>
+<h3 id="_18"><a name="user-content-_18" href="#_18" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>事件循环</h3>
+<h3 id="video-api"><a name="user-content-video-api" href="#video-api" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Video API</h3>
+<h3 id="audio-api"><a name="user-content-audio-api" href="#audio-api" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Audio API</h3>
+<h2 id="js"><a name="user-content-js" href="#js" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>JS库及框架</h2>
+<h3 id="react"><a name="user-content-react" href="#react" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>React</h3>
+<h4 id="jsx"><a name="user-content-jsx" href="#jsx" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>JSX语法</h4>
+<h4 id="_19"><a name="user-content-_19" href="#_19" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>生命周期</h4>
+<h5 id="componentwillmount"><a name="user-content-componentwillmount" href="#componentwillmount" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>componentWillMount</h5>
+<h5 id="componentdidmount"><a name="user-content-componentdidmount" href="#componentdidmount" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>componentDidMount</h5>
+<h5 id="componentwillreceiveprops"><a name="user-content-componentwillreceiveprops" href="#componentwillreceiveprops" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>componentWillReceiveProps</h5>
+<h5 id="shouldcomponentupdate"><a name="user-content-shouldcomponentupdate" href="#shouldcomponentupdate" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>shouldComponentUpdate</h5>
+<h5 id="componentwillupdate"><a name="user-content-componentwillupdate" href="#componentwillupdate" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>componentWillUpdate</h5>
+<h5 id="componentdidupdate"><a name="user-content-componentdidupdate" href="#componentdidupdate" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>componentDidUpdate</h5>
+<h5 id="componentwillunmount"><a name="user-content-componentwillunmount" href="#componentwillunmount" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>componentWillUnmount</h5>
+<h4 id="state-vs-props"><a name="user-content-state-vs-props" href="#state-vs-props" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>state vs props</h4>
+<h4 id="context-api"><a name="user-content-context-api" href="#context-api" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Context API</h4>
+<h4 id="react-redux"><a name="user-content-react-redux" href="#react-redux" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>React redux</h4>
+<h4 id="createclass"><a name="user-content-createclass" href="#createclass" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>createClass</h4>
+<h4 id="createelement"><a name="user-content-createelement" href="#createelement" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>createElement</h4>
+<h4 id="react-router-dom"><a name="user-content-react-router-dom" href="#react-router-dom" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>react-router-dom</h4>
+<h3 id="vue"><a name="user-content-vue" href="#vue" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Vue</h3>
+<h3 id="angular"><a name="user-content-angular" href="#angular" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Angular</h3>
+<h2 id="_20"><a name="user-content-_20" href="#_20" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>前端自动化</h2>
+<h3 id="webpack"><a name="user-content-webpack" href="#webpack" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>webpack</h3>
+<h3 id="gulp"><a name="user-content-gulp" href="#gulp" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>gulp</h3>
+<h2 id="nodejs"><a name="user-content-nodejs" href="#nodejs" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Node.js</h2>
+<p>HTML&amp;CSS：<br />
+    对Web标准的理解（结构、表现、行为）、浏览器内核、渲染原理、依赖管理、兼容性、CSS语法、层次关系，常用属性、布局、选择器、权重、盒模型、<br />
+    Hack、CSS预处理器、CSS3、Flexbox、CSS Modules、Document flow、BFC、HTML5（离线 &amp; 存储、Histoy,多媒体、WebGL\SVG\Canvas）；   <br />
+JavaScript：<br />
+    数据类型、运算、对象、Function、继承、闭包、作用域、事件、Prototype、RegExp、JSON、Ajax、DOM、BOM、<br />
+    内存泄漏、跨域、异步请求、模板引擎、模块化、Flux、同构、算法、ECMAScript6、Nodejs、HTTP、</p>
+<p>其他：<br />
+    主流MVVM框架(React\Vue\Angular)、Hybrid App\React Native\Weex、TypeScript、RESTFul、WEB安全、前端工程化、依赖管理、性能优化、<br />
+    重构、团队协作、可维护、易用性、SEO、UED、前端技术选型、快速学习能力等；</p></article></body></html>

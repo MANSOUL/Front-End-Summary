@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .item  {
+      height: 100px;
+    }
+
+    .item:nth-child(odd) {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div id="container" style="width: 100%; height: 100vh; overflow-y: scroll; position: relative;">
+    <div id="listParent" style="width: 100%; position:relative;">
+      <div id="list">
+
+      </div>
+    </div>
+  </div>
+  <script>
+    /**
+     * 主要原理就是利用scrollTop、clientHeight来
+     * 计算出当前可见区域的起始索引和结束索引，然后只渲染这部分数据，其他数据不渲染，从而达到虚拟列表的效果。
+     * 
+     */
+    const listData = Array.from({ length: 10000 }, (_, i) => `Item ${i + 1}`);
+    const $listContainer = document.getElementById('list');
+    const $container = document.getElementById('container');
+    const $listParent = document.getElementById('listParent');
+    const itemHeight = 100; // 每个item的高度
+    const visibleCount = Math.ceil($container.clientHeight / itemHeight); // 可见区域的item数量
+    $listParent.style.height = `${listData.length * itemHeight}px`; // 设置父容器的高度
+
+    const render = () => {
+      const scrollTop = $container.scrollTop;
+  
+      // 计算可见区域的起始和结束索引
+      const startIndex = Math.floor(scrollTop / itemHeight);
+      const endIndex = Math.min(listData.length - 1, startIndex + visibleCount);
+  
+      // 清空当前列表内容
+      $listContainer.innerHTML = '';
+  
+      // 渲染可见的列表项
+      for (let i = startIndex; i <= endIndex; i++) {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.textContent = listData[i];
+        $listContainer.appendChild(item);
+      }
+
+      $listContainer.style.transform = `translateY(${startIndex * itemHeight}px)`
+    }
+
+    $container.addEventListener('scroll', () => {
+      render()
+    })
+
+    render()
+  </script>
+</body>
+</html>
