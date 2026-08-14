@@ -1,6 +1,6 @@
 ### Https握手
 
-![https握手](./images/7.jpg)
+![https握手](../images/7.jpg)
 
 1. client-hello 阶段：浏览器发送支持的加密算法、随机数1、支持的加密套件
 2. server-hello 阶段：服务器返回随机数2、选用的加密套件
