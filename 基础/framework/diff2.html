@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    1. 总流程：从“状态变化”到“屏幕变亮”<br>
+当列表 ABCD 变成 ADBC 时，React 不会粗暴地删除重建，而是经历两个严格的阶段：<br>
+
+Render（渲染）阶段：“找不同”。这个阶段可中断，负责算出“谁需要动”。<br>
+
+Commit（提交）阶段：“施工”。这个阶段同步且不可中断，负责把变化真实地反应到 DOM 上。<br>
+
+2. Render 阶段：Diff 算法只问“动不动”<br>
+在这个阶段，算法拿着新旧两个列表，只做一件事：用 lastPlacedIndex（上次最大索引）规则，给节点打标记。<br>
+
+遍历新列表 [A, D, B, C]，查找它们在旧列表中的位置。<br>
+
+A（旧0）和 D（旧3）按顺序递增，不动。<br>
+
+B（旧1）和 C（旧2）发现自己的旧索引小于当前的 lastPlacedIndex（即3），被判定为 “需要移动”。<br>
+
+结论：此时算法根本不管 B 和 C 要挪到哪，只是简单地在它们身上贴了个 “待施工” 的标签。<br>
+
+3. Commit 阶段：“新列表的兄弟节点”就是施工蓝图<br>
+进入真正操作 DOM 时，算法彻底忘掉旧列表和物理 DOM 当前的混乱状态，完全依照新 Fiber 树（虚拟 DOM） 中的关系来操作：<br>
+
+铁律：任何移动都通过 parentNode.insertBefore(节点, 下一个兄弟节点) 实现（如果下一个兄弟是 null，则用 appendChild）。<br>
+
+逆序处理：为了保证不覆盖，先处理 C，再处理 B。<br>
+
+移 C：看新列表，C 的下一个兄弟是 null（末尾） → 执行 appendChild(C)，C 跑到末尾（物理 DOM 暂时为 A-B-D-C）。<br>
+
+移 B：看新列表，B 的下一个兄弟是 C（注意，此时逻辑上 B 的兄弟永远指向 C，算法不看物理 DOM 上 B 旁边是谁） → 执行 insertBefore(B, C)，浏览器自动把 B 剪切并插到 C 前面。<br>
+
+4. 整个机制最精妙的两个设计点<br>
+职责解耦（你的核心顿悟）：Diff 只负责“判叛变”（数值比较），Commit 只负责“看地图”（读取 Fiber 节点的 sibling 指针）。两者互不干扰，避免了计算“相对位移”的复杂逻辑。<br>
+
+物理 DOM 只作为“被操作的肉”：Commit 阶段完全不依赖物理 DOM 的当前结构来决策（比如不看 B 现在挨着 D）。它只把物理 DOM 当作一个任由 insertBefore 暴力“剪切+插入”的容器，浏览器的原生 API 会保证最终顺序绝对正确。<br>
+
+最终结论<br>
+Diff 阶段找“谁要动”，Commit 阶段根据“新列表里的邻居是谁”决定“动到哪”。 这两者结合，让 React 用最少的 DOM 操作（本例仅 2 次移动）和极简的算法逻辑，高效地完成了界面的更新。
+  </div>
+  <script>
+     /**
+     * 虚拟列表实现
+     * 
+     */
+    let findIndex = (list, key) => {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].key === key) {
+          return i;
+        }
+      }
+      return -1;
+    }
+    // cabd  cbda
+
+    let oldListVDOM = [{ key: 'A', next: 'B' }, { key: 'B', next: 'C' }, { key: 'C', next: 'D' }, { key: 'D', next: '' }];
+    let newListVDOM = [{ key: 'A', next: 'D' }, { key: 'D', next: 'B' }, { key: 'B', next: 'C' }, { key: 'C', next: '' }];
+    // let newListVDOM = [{ key: 'B', next: 'D' }, { key: 'D', next: 'C' }, { key: 'C', next: 'A' }, { key: 'A', next: '' }];
+    let visitedOldMaxIndex = 0; // 访问过的老集合的最大下标
+    for (let i = 0; i < newListVDOM.length; i++) {
+      const element = newListVDOM[i];
+      let oldIndex = findIndex(oldListVDOM, element.key);
+      let oldElement = oldListVDOM[oldIndex];
+      // if (oldIndex === -1) {
+      //   console.log(`元素${element}需要创建`);
+      //   oldList.splice(visitedOldMaxIndex + 1, 0, element);
+      //   console.log(JSON.stringify(oldList));
+      //   oldIndex = visitedOldMaxIndex + 1;
+      // } else
+      if (visitedOldMaxIndex > oldIndex) {
+        console.log(`元素${element.key}需要移动`);
+        // 标记为需要移动
+        oldElement.needMove = true;
+        oldElement.moveToIndex = visitedOldMaxIndex;
+       
+      }
+      visitedOldMaxIndex = Math.max(visitedOldMaxIndex, oldIndex);
+    }
+
+    console.log(JSON.stringify(oldListVDOM));
+
+    // 从右往左遍历新列表
+    for (let i = newListVDOM.length - 1; i >= 0; i--) {
+      const element = newListVDOM[i];
+      // 找到元素在老列表中的位置
+      let oldIndex = findIndex(oldListVDOM, element.key);
+      let oldElement = oldListVDOM[oldIndex];
+      // 如果老元素需要移动，那么就将它移动到新列表中对应的位置
+      if (oldElement.needMove) {
+        // 如果元素没有next指针，说明它是新列表的最后一个元素，那么就直接将它老位置移动到为末
+        if (!element.next) {
+          // 将元素移动到末尾
+          oldListVDOM.push(oldListVDOM.splice(oldIndex, 1)[0]);
+        } else {
+          // 如果不是在末尾，那么就通过它next指针继续查找它的下一个元素，并插入到它的下一个元素的前面
+          let nextKey = element.next;
+          let nextIndex = findIndex(newListVDOM, nextKey);
+          oldListVDOM.splice(nextIndex - 1, 0, oldListVDOM.splice(oldIndex, 1)[0]);
+        }
+        oldElement.needMove = false;
+      }
+      // console.log(JSON.stringify(oldListVDOM));
+    }
+
+
+    console.log('oldListVDOM:', JSON.stringify(oldListVDOM));
+  </script>
+</body>
+</html>
