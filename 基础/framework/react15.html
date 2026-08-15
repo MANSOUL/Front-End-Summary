@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    let treeLike = {
+      tag: 'div',
+      children: [
+        {
+          tag: 'p',
+          children: [
+            {
+              tag: 'span',
+              children: []
+            }
+          ]
+        },
+        {
+          tag: 'ul',
+          children: [
+            {
+              tag: 'li',
+              children: []
+            },
+            {
+              tag: 'li',
+              children: []
+            }
+          ]
+        }
+      ]
+    }
+
+    /**
+     * 递归遍历树
+     * @param {*} node 
+     */
+    let traverse = (node) => {
+      console.log(node.tag);
+      if (node.children && node.children.length > 0) {
+        node.children.forEach(child => {
+          traverse(child);
+        });
+      }
+    }
+    traverse(treeLike);
+  </script>
+</body>
+</html>
