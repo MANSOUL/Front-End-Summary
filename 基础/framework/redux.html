@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button>+1</button>
+  <script>
+    let compose = function(fns) {
+      return (dispatch) => {
+        return fns.reduceRight((res, fn) => fn(res), dispatch)
+      }
+    }
+
+    let applyMiddleware = function(...middlewares) {
+      return createStore => (reducer, initialState) => {
+        let store = createStore(reducer, initialState)
+        let dispatch = store.dispatch
+
+        let middlewareAPI = {
+          getState: store.getState,
+          dispatch: action => dispatch(action)
+        }
+        let chain = middlewares.map(middleware => middleware(middlewareAPI))
+        console.log(chain)
+        dispatch = compose(chain)(store.dispatch)
+        console.log(dispatch)
+        return {
+          ...store,
+          dispatch
+        }
+      }
+    }
+
+    // log middleware
+    let logMiddleware = (store) => {
+      let next = store.dispatch
+      let dispatchAndLog = () => {
+        // console.log(action)
+        // next(action)
+        return (action) => {
+        console.log(`--Log: beforeDispatch`, JSON.stringify(action))
+
+          next(action)
+        console.log('--Log: afterDispatch', store.getState())
+
+        }
+      } 
+      // store.dispatch = dispatchAndLog
+      return dispatchAndLog
+    }
+
+
+    let createStore = function(reducer, initialSate, enhancer) {
+      if (enhancer) {
+        return enhancer(createStore)(reducer, initialSate)
+      }
+
+      let state = reducer(initialSate)
+      let observers = []
+      let subscribe = function(fn) {
+        observers.push(fn)
+      }
+      let dispatch = function(action) {
+        state = reducer(state, action)
+        observers.map(fn => fn(state))
+      }
+      let getState = function() {
+        return state
+      }
+      
+      return {
+        dispatch,
+        subscribe,
+        getState
+      }
+    }
+
+    let reducer = function(state, action) {
+      if (!action) return state
+      switch(action.type) {
+        case 'COUNT': return { ...state, count: action.count }
+      }
+      return state
+    }
+
+    let initialState = {
+      count: 0
+    }
+    
+    let store = createStore(reducer, initialState, applyMiddleware(logMiddleware))
+    console.log(store)
+    store.subscribe(() => {
+      console.log(store.getState())
+    })
+    let count = 0
+    document.querySelector('button').addEventListener('click', () => {
+      store.dispatch({
+        type: 'COUNT',
+        count: count++
+      })
+    })
+  </script>
+</body>
+</html>

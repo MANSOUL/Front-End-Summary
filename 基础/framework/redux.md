@@ -1,4 +1,7 @@
 # Redux
+- 单一数据源
+- state是只读的
+- 通过纯函数来执行修改
 
 ## createStore
 作用：用于创建保存着整颗状态树的Redux store。
