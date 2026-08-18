@@ -23,7 +23,8 @@
 
 
     // 同步伪代码：
-    let fiber = null
+    let fiber = null // 工作中的fiber
+    let _currentFiber = null // 当前构建的fiber
     function createHook(value, queue, set) {
       return {
         memoizedState: value,
@@ -87,11 +88,12 @@
           update()
         })
       }
+      $setCount.textContent = 'Count'+count
+      $setAge.textContent = 'Age'+age
       console.log('COUNT:', count)
       console.log('AGE:', age)
     }
 
-    let _currentFiber = null
     function createFiber(C) {
       _currentFiber = {
         memoizedState: null,
