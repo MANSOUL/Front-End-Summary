@@ -45,7 +45,14 @@
         }
 
         // 更新state
-        hook.memoizedState = hook.queue[hook.queue.length - 1]
+        let queueItem = hook.queue[hook.queue.length - 1]
+        if (typeof queueItem === 'function') {
+          hook.memoizedState = queueItem(hook.queue[hook.queue.length - 2])
+          hook.queue[hook.queue.length - 1] = hook.memoizedState
+        } else {
+          hook.memoizedState = queueItem
+        }
+        // hook.queue.length = 0
         fiber.fiberIndex++
       } else {
         let _value = value
@@ -72,7 +79,7 @@
 
       if (!fiber) {
         $setCount.addEventListener('click', () => {
-          setCount(count + 1)
+          setCount((count) => (count + 1))
           update()
         })
         $setAge.addEventListener('click', () => {
