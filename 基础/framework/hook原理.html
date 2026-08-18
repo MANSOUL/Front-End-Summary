@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button id="setCount">Count+1</button>
+  <button id="setAge">Age+1</button>
+  <script>
+    // Hook 是挂在Fiber节点上的一个单向链表
+    // 首次渲染时，React依次创建Hook对象，挂到链表上
+    // 更新渲染时，React不再创建新对象，而是沿着链表依次取出Hook对象，更新其状态
+    // 有一个memoizedState属性，存储当前状态值
+    // 有一个next属性，指向下一个Hook对象
+    // 有一个queue属性，存储更新队列
+    // React不会根据if条件来动态调整链表顺序，只认死顺序
+    // 调用 setState 时，并不是直接修改当前变量，而是做三件事：
+    // 挂载更新：把新值塞进当前 Hook 对象的 queue（更新队列）里。
+    // 触发调度：向 React 内部调度器（Scheduler）发起请求，标记这个 Fiber 节点需要“重渲染”。
+    // 重新执行：下一次渲染时，React 再次执行这个函数组件，重新遍历 Hooks 链表，并从 queue 里计算出最新的 memoizedState 返回给你。
+
+
+    // 同步伪代码：
+    let fiber = null
+    function createHook(value, queue, set) {
+      return {
+        memoizedState: value,
+        next: null,
+        queue: queue,
+        setState: set
+      }
+    }
+
+    function useState(value) {
+      let hook = null
+      if (fiber) {
+        hook = fiber.memoizedState
+        // debugger
+        let idx = 0
+        while(idx < fiber.fiberIndex) {
+            hook = hook.next
+            idx++
+        }
+
+        // 更新state
+        hook.memoizedState = hook.queue[hook.queue.length - 1]
+        fiber.fiberIndex++
+      } else {
+        let _value = value
+        let _queue = [value]
+        let set = function(newValue) {
+          _queue.push(newValue)
+        }
+        hook = createHook(_value, _queue, set)
+        if (_currentFiber.memoizedState) {
+          _currentFiber.memoizedState.next = hook
+        } else {
+          _currentFiber.memoizedState = hook
+        }  
+      }
+      return [hook.memoizedState, hook.setState]
+    }
+
+    const $setCount = document.getElementById('setCount')
+    const $setAge = document.getElementById('setAge')
+
+    function Component() {
+      const [count, setCount] = useState(0)
+      const [age, setAge] = useState(0)
+
+      if (!fiber) {
+        $setCount.addEventListener('click', () => {
+          setCount(count + 1)
+          update()
+        })
+        $setAge.addEventListener('click', () => {
+          setAge(age + 1)
+          update()
+        })
+      }
+      console.log('COUNT:', count)
+      console.log('AGE:', age)
+    }
+
+    let _currentFiber = null
+    function createFiber(C) {
+      _currentFiber = {
+        memoizedState: null,
+        fiberIndex: 0
+      }
+
+      C() // 执行函数组件，触发useState
+
+      return _currentFiber
+    }
+
+    function update() {
+      fiber.fiberIndex = 0
+      // 更新阶段
+      Component()
+    }
+
+    fiber = createFiber(Component)
+    console.log(fiber)
+  </script>
+</body>
+</html>
