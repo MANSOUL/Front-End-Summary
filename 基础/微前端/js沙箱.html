@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    class SandBox {
+      constructor() {
+        let fakeWindow = Object.create(null)
+
+        let proxy = new Proxy(fakeWindow, {
+          get(target, key) {
+            console.log('get:', key)
+            if (!target[key]) {
+              return window[key]
+            }
+            return target[key]
+          },
+          set(target, key, value) {
+            console.log('set:', key, value)
+            target[key] = value
+            return true
+          },
+          has(target, key) {
+            console.log('has:', key)
+            return true
+          }
+        })
+
+        this.proxy = proxy
+      }
+
+      eval(code) {
+        const withCode = `
+          with(global) {
+            ${code}
+          }
+        `
+        const fn = new Function('global', withCode)
+        fn(this.proxy)
+      }
+    }
+
+    const sandBox = new SandBox()
+    sandBox.eval('const result = window.Math.min(2, 3); console.log(result);')
+    sandBox.eval('a=123;console.log(a);')
+    console.log(window.a)
+
+    // let obj = {
+    //   a: 1,
+    //   b: 2
+    // }
+    // with(obj) {
+    //   a = 5
+    //   console.log(a, b)
+    // }
+
+    // console.log(obj)
+    // console.log(window.a)
+  </script>
+</body>
+</html>
