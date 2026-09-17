@@ -1,6 +1,6 @@
 # MySQL
 
-> 初学者从这一篇开始。建议顺序：[MySQL](./MySQL.md) → [索引](./索引/索引.md) → [事务](./事务/事务.md) → [Redis](../redis/Redis.md) → [Docker](../docker/Docker.md)。
+> 初学者从这一篇开始。建议顺序：[MySQL](./MySQL.md) → [索引](./索引/索引.md) → [事务](./事务/事务.md) → [Redis](../redis/Redis.md) → [FastAPI](../fastapi/FastAPI.md) → [Next.js](../nextjs/Nextjs.md) → [Docker](../docker/Docker.md)。
 >
 > 没见过的词，第一次出现都会用括号讲成人话。面试题放最后，正文没看完可以先跳过。
 
