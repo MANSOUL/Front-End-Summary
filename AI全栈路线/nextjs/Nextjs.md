@@ -1,31 +1,35 @@
 # Next.js
 
-> 建议先看 [FastAPI](../fastapi/FastAPI.md)：页面上的数据从哪来，先有数。
+> 这篇按 **App Router**（`app/` 目录）写，这是新项目的默认方式。Pages Router（`pages/`）只在对照渲染模型时出现。
 >
-> Next.js 是做 **页面** 的 React 框架。人看见的列表、详情、上传按钮、打字机效果，放这里。查库、下单、限流，仍走 FastAPI。
+> 没见过的词第一次会用人话解释。建议先有一点 React（组件、`useState`、`props`），没有后端基础也能读。
+>
+> 读的顺序：是什么 → 基础 → 渲染和缓存原理 → 进阶 → 场景 → 痛点 → 面试题。原理那节最重要，前面的 API 都是为它服务的。
 
 ---
 
 ## 是什么，能做什么
 
-React 负责「一块块 UI」。Next.js 在 React 外面加了几件网站必备的东西：
+React 负责「一块块 UI 怎么画」。它不管网址怎么对应文件、HTML 什么时候拼、密钥藏哪、图片怎么压缩。纯 React（Vite / CRA）默认是 **CSR**（客户端渲染）：浏览器先下载一个空壳 JS，再自己拉数据、再画出页面。首屏慢，搜索引擎也很难看到正文。
 
-1. **按文件夹路由**：`app/products/page.tsx` 就是 `/products` 这个网址，不必自己配路由表
-2. **能在服务器上跑 React**：打开页面时先在服务器把数据取好再吐 HTML，首屏更快、也利于 SEO
-3. **约定文件**：`loading.tsx` 加载中，`error.tsx` 出错，不必每个页面手写一套
+Next.js 是 Vercel 做的 React 框架，把网站缺的那一层补上：
 
-下面按现在的 **App Router**（`app/` 目录）讲，这是新项目的默认方式。
+1. **文件系统路由**：文件夹结构就是网址，不必自己维护一份路由表
+2. **服务器上跑 React**：默认 **Server Component**（服务器组件），打开页面时可以在服务器取数、吐 HTML
+3. **多种渲染**：同一项目里，有的页构建时生成，有的页每次请求现拼，有的页过期后再生成
+4. **约定文件**：加载中、出错、404、布局，都有固定文件名
+5. **构建期优化**：代码分割、图片、字体、打包时去掉用不到的服务器代码
 
-| 能做 | 不要靠它做 |
-|---|---|
-| 商品列表 / 详情 / 后台表单 | 直连 MySQL（密钥会进浏览器或前端仓库） |
-| 调 FastAPI、展示 SSE 打字机 | 下单事务、扣库存（那是 FastAPI + MySQL） |
-| 上传文件的进度条、选择器 | 切片 PDF、跑大模型 |
-| 登录后的页面门禁 | 当 Redis 用（刷新就没了的状态可以，长期真相不行） |
+它不是另一种 React，底层仍是 React。差别在：**组件默认在哪执行、数据默认怎么取、路由默认怎么组织。**
 
-没有 Next.js，用 Vite + React 也能做页面。痛点出现在：**要自己接路由和首屏渲染、接口密钥容易暴露、SSE 和上传要全手写、开发和线上不是同一套约定。**
+| 能做                  | 不要默认靠它做                    |
+| ------------------- | -------------------------- |
+| 站点、后台、文档、带 SEO 的内容页 | 替代数据库（数据真相仍在 DB）           |
+| 服务端取数、流式渲染、BFF 聚合   | 替代消息队列、长时间后台任务             |
+| `app/api` 写一些接口     | 复杂事务、多客户端共用的核心 API（可以另起后端） |
+| 鉴权门禁、中间件改写请求        | 在浏览器里藏数据库密码                |
 
-和 FastAPI 的分工就一句：**人看见的在 Next.js，规则和真相在 FastAPI / MySQL。**
+没有 Next.js，Vite + React 也能做页面。痛点是路由、首屏 HTML、SEO、密钥边界、缓存策略都要自己拼。有历史包袱的旧项目可以继续 Pages Router；**新项目用 App Router。**
 
 ---
 
@@ -34,229 +38,536 @@ React 负责「一块块 UI」。Next.js 在 React 外面加了几件网站必�
 ### 建项目
 
 ```bash
-npx create-next-app@latest wine-web
-cd wine-web
-npm run dev
+npx create-next-app@latest
+cd 项目目录
+npm run dev      # http://localhost:3000
+npm run build    # 生产构建，看哪些路由是静态、哪些是动态
+npm start        # 跑构建产物
 ```
 
-浏览器打开 [http://localhost:3000](http://localhost:3000)。接口若在 8000，页面在 3000，这是两个程序。
+向导里选 App Router、TypeScript。构建日志会打印每个路由是 `Static` 还是 `Dynamic`，这是后面理解 SSR/SSG 的第一手材料。
 
-常用目录（App Router）：
+### 约定文件（App Router）
 
-| 文件                           | 网址 / 作用                    |
-| ---------------------------- | -------------------------- |
-| `app/page.tsx`               | `/` 首页                     |
-| `app/products/page.tsx`      | `/products` 列表             |
-| `app/products/[id]/page.tsx` | `/products/42` 详情，`id` 是变量 |
-| `app/layout.tsx`             | 所有页面的外壳（导航、字体）             |
-| `app/loading.tsx`            | 这一段还在取数据时显示的样子             |
-| `app/error.tsx`              | 出错时的样子                     |
-| `.env.local`                 | 本地密钥和接口地址，不要提交到 Git        |
+一个文件夹 = 一段 URL。真正决定「有没有这个页面」的是 `page.tsx`。
 
-### 默认在服务器上跑：Server Component
+| 文件 | 作用 |
+|---|---|
+| `app/page.tsx` | `/` |
+| `app/blog/page.tsx` | `/blog` |
+| `app/blog/[slug]/page.tsx` | `/blog/hello`，`slug` 是变量 |
+| `app/layout.tsx` | 这一段及其子路由的外壳，切子页时尽量保住，不会整页卸载 |
+| `app/template.tsx` | 也是外壳，但每次导航都会重新挂载（要重置状态时用） |
+| `app/loading.tsx` | 这一段在加载时的 UI，底层是 `Suspense` 的 fallback |
+| `app/error.tsx` | 必须是 Client Component，接住这一段的渲染错误 |
+| `app/not-found.tsx` | 调用 `notFound()` 或未匹配时 |
+| `app/global-error.tsx` | 根布局都挂了时的最后兜底 |
+| `app/route.ts` | 这个路径是 HTTP 接口，不是页面 |
+| `app/default.tsx` | 平行路由的兜底槽 |
+| `middleware.ts` | 放项目根（或 `src/` 根），请求进来、命中路由之前跑 |
 
-`app/` 里的组件**默认是服务器组件**：只在服务器跑，可以藏接口地址，也可以直接 `fetch` FastAPI。浏览器拿不到这份源码里的密钥。
+特殊文件夹名：
+
+| 写法 | 含义 |
+|---|---|
+| `[id]` | 一段动态参数 |
+| `[...slug]` | 后面所有段，必有 |
+| `[[...slug]]` | 可选捕获，`/docs` 和 `/docs/a/b` 都能进 |
+| `(marketing)` | **路由组**，组织代码，不进 URL |
+| `@modal` | **平行路由**，同一布局里多个槽同时渲染 |
+| `_components` | 下划线前缀：不是路由 |
+
+根 `layout.tsx` 必须有 `<html>` 和 `<body>`，全站只有这一处写。
 
 ```tsx
-// app/products/page.tsx
-async function getProducts() {
-  const res = await fetch(`${process.env.API_URL}/products?status=on`, {
-    cache: "no-store", // 每次打开都问最新的，适合后台列表
-  });
-  if (!res.ok) throw new Error("列表失败");
-  return res.json();
-}
-
-export default async function ProductsPage() {
-  const products = await getProducts();
+// app/layout.tsx
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ul>
-      {products.map((p: { id: number; name: string }) => (
-        <li key={p.id}>{p.name}</li>
-      ))}
-    </ul>
+    <html lang="zh">
+      <body>{children}</body>
+    </html>
   );
 }
 ```
 
-`API_URL=http://127.0.0.1:8000` 写在 `.env.local`，**不要**加 `NEXT_PUBLIC_` 前缀。没有这个前缀的变量只在服务器存在。
+### 动态路由拿参数
 
-Docker 里 Next 服务连 FastAPI，写服务名：`http://api:8000`，不要写 `localhost`。见 [Docker](../docker/Docker.md)。
-
-### 必须加 `'use client'` 的时候
-
-下面这些只能在浏览器跑，文件第一行写 `'use client'`：
-
-- 点击、输入、`useState` / `useEffect`
-- `EventSource` 接 SSE
-- 选文件上传、本地预览
+Next 15 起 `params`、`searchParams` 是 Promise，要 `await`。
 
 ```tsx
-// app/products/[id]/buy-button.tsx
+// app/blog/[slug]/page.tsx
+export default async function PostPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ from?: string }>;
+}) {
+  const { slug } = await params;
+  const { from } = await searchParams;
+  return <h1>{slug}</h1>;
+}
+```
+
+生成「有哪些 slug 要在构建时预渲染」，用 `generateStaticParams`，对应 Pages 里的 `getStaticPaths`。
+
+```tsx
+export async function generateStaticParams() {
+  return [{ slug: "hello" }, { slug: "next" }];
+}
+```
+
+### 导航
+
+```tsx
+import Link from "next/link";
+import { redirect, notFound, permanentRedirect } from "next/navigation";
+
+<Link href="/blog/hello">文章</Link>
+
+// 服务器组件里立刻换地址（没有回退按钮的那种跳转，适合没登录）
+redirect("/login");
+permanentRedirect("/new-url"); // 308
+
+// 渲染时发现没有这份资源
+notFound();
+```
+
+客户端里要用 `useRouter()`（`'use client'`）：`router.push` / `router.replace` / `router.refresh()`。`refresh` 不换 URL，只让当前路由在服务器上再拉一次数据，Server Action 之后常用。
+
+`<Link>` 默认会预取进入视口的静态路由，所以点进去很快。动态路由、或你加了 `prefetch={false}`，就不会预取。
+
+### 环境变量
+
+| 写法 | 谁看得见 |
+|---|---|
+| `API_URL`、`DATABASE_URL` | 只有服务器（Server Component、Route Handler、Server Action） |
+| `NEXT_PUBLIC_API_URL` | 打包进浏览器，用户打开源码就能看到 |
+
+密钥、数据库地址、第三方 Admin Key **不要**加 `NEXT_PUBLIC_`。需要给浏览器用的，只暴露「浏览器真正能访问的那个 API 根路径」。
+
+本地放 `.env.local`，不要进 Git。改环境变量通常要重启 `next dev`。
+
+### 服务器组件和客户端组件
+
+`app/` 里**默认是服务器组件**：只在服务器跑，可以 `async`，可以直接读文件、读密钥、`fetch` 内网。产物里不会带这份函数的源码。
+
+浏览器里才能做的事，文件**第一行**写 `'use client'`：
+
+- `useState` / `useEffect` / `useRef`
+- `onClick`、受控输入
+- `window` / `document` / `EventSource` / `localStorage`
+
+规则：
+
+1. **服务器组件可以 import 客户端组件**，反过来不行（客户端 bundle 拉不进服务器模块）。
+2. 传给客户端组件的 props 必须能序列化：普通对象、字符串、数字可以；函数、Class、Date 要小心（Date 会变成字符串）。
+3. 不要把整个页面标成 `'use client'`。把按钮、输入拆成小的客户端叶子，外壳继续当服务器组件。
+4. `'use client'` 是**模块边界**：这个文件以及它 import 的本地模块，都会进客户端包。所以不要在 client 文件里 import 一个很重的、其实只该在服务器用的库。
+
+```tsx
+// app/like-button.tsx
 "use client";
 
 import { useState } from "react";
 
-export function BuyButton({ id }: { id: number }) {
-  const [pending, setPending] = useState(false);
-
-  async function buy() {
-    setPending(true);
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ product_id: id, amount: 1 }),
-    });
-    setPending(false);
-  }
-
-  return <button onClick={buy} disabled={pending}>购买</button>;
+export function LikeButton() {
+  const [n, setN] = useState(0);
+  return <button onClick={() => setN(n + 1)}>{n}</button>;
 }
 ```
-
-注意：浏览器里的 `fetch` 走的是用户的电脑，地址必须是浏览器能访问的，比如 `http://localhost:8000`。所以这种变量才用 `NEXT_PUBLIC_API_URL`。
-
-两种调用对比：
-
-| | 服务器组件里 fetch | 浏览器里 fetch |
-|---|---|---|
-| 变量 | `API_URL`（不公开） | `NEXT_PUBLIC_API_URL` |
-| CORS | 没有跨域问题 | FastAPI 要开 CORS |
-| 适合 | 列表、详情首屏 | 点击购买、上传、SSE |
-
-能在服务器取的，就不要绕到浏览器再取一遍。密钥、内部地址只放服务器。
-
-### 动态路由
-
-`app/products/[id]/page.tsx`：
 
 ```tsx
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const res = await fetch(`${process.env.API_URL}/products/${id}`, {
-    cache: "no-store",
-  });
-  if (res.status === 404) return <p>没有这个商品</p>;
-  const p = await res.json();
-  return <h1>{p.name}</h1>;
+// app/page.tsx  服务器组件，没有 "use client"
+import { LikeButton } from "./like-button";
+
+export default async function Page() {
+  const data = await getData(); // 只在服务器跑
+  return (
+    <div>
+      <p>{data.title}</p>
+      <LikeButton />
+    </div>
+  );
 }
 ```
 
-文件夹名 `[id]` 就是占位符。访问 `/products/42`，`id` 就是 `"42"`。
+---
 
-### 环境变量，千万别把密码公开
+## 渲染、缓存和原理
 
-| 写法 | 谁看得见 |
+这是 Next 和「Vite + React」分道的地方。先分清三个经常被混在一起的词：
+
+| 词 | 人话 |
 |---|---|
-| `API_URL` / `DATABASE_URL` | 只有服务器 |
-| `NEXT_PUBLIC_API_URL` | 打包进浏览器，用户打开开发者工具就能看到 |
+| **CSR** | 浏览器拿到空壳 JS，自己取数、自己画 |
+| **SSR** | **每个请求**在服务器把组件跑成 HTML，再发给浏览器 |
+| **SSG** | **构建时**跑一遍，HTML 写到磁盘，请求只是把文件发出去 |
+| **ISR** | 先当 SSG；过期后后台再生成，期间可以继续用旧 HTML |
+| **RSC** | React Server Components：组件在服务器执行，把「UI 描述」发给客户端。它不是 SSR 的别名 |
 
-MySQL 密码、Redis 地址、模型 API Key **永远不要** `NEXT_PUBLIC_`。页面需要它们时，让 FastAPI 在服务器用，页面只拿结果。
+RSC 解决的是「哪些组件的代码根本不用进浏览器」。SSR 解决的是「首屏 HTML 谁来拼」。两者经常一起出现：服务器跑 Server Component → 吐 HTML（SSR）+ 一份 RSC 载荷 → 浏览器只对标了 `'use client'` 的部分做 **hydration**（把已有 HTML 接上事件和 state）。
+
+### 一次请求大概发生了什么
+
+1. 请求进 Node（或 Edge）。`middleware.ts` 若匹配，先跑，可以改写 URL、设 cookie、直接返回。
+2. 命中某个 `page.tsx`。从根 layout 往下渲染。遇到 `loading.tsx` / `Suspense`，可以先把外壳流出去。
+3. 服务器组件在服务器执行完毕。客户端组件只被序列化成「占位 + 需要的 props」，它们的 JS 稍后由浏览器跑。
+4. 响应里通常有：立刻能看的 HTML、RSC Flight 载荷（组件树的描述）、客户端 JS。
+5. 浏览器画出 HTML，再跑客户端 JS，hydration。之后的 `<Link>` 切页，往往不再要整份 HTML，而是拉 RSC 载荷换一棵子树（这就是 App Router 的客户端导航）。
+
+hydration 报错（「Text content does not match」）= 服务器吐出的 HTML 和浏览器第一轮渲染对不上。典型原因：用了 `Date.now()`、`Math.random()`、`window` 在服务器组件里，或本地和服务器时区不一致。依赖浏览器的值放进 `'use client'`，并且在 `useEffect` 之后再写到画面上。
+
+### Pages Router 怎么实现三种模式
+
+Pages 用「页面旁边的数据函数」决定整页怎么渲染。
+
+**SSR**：`getServerSideProps`。构建不生成这页。每次请求跑函数，结果当 `props`。
+
+```js
+export async function getServerSideProps(ctx) {
+  const data = await load(ctx.query.id);
+  return { props: { data } };
+}
+```
+
+**SSG**：`getStaticProps`。`next build` 时跑。动态路由再加 `getStaticPaths`。
+
+```js
+export async function getStaticPaths() {
+  return { paths: [{ params: { id: "1" } }], fallback: false };
+}
+export async function getStaticProps() {
+  return { props: { data: await load() } };
+}
+```
+
+`fallback`：`false` 未列出的路径 404；`blocking` 第一次现拼再缓存；`true` 先给壳。
+
+**ISR**：仍是 `getStaticProps`，多 `revalidate` 秒。过期后第一个请求拿到旧 HTML，Next 在后台重跑；之后才是新页。也可 `res.revalidate(path)` 主动重建。
+
+```js
+export async function getStaticProps() {
+  return { props: { data: await load() }, revalidate: 60 };
+}
+```
+
+Pages 基本是**整页三选一**。没有 RSC，组件默认都会进客户端 bundle（除非你自己拆）。
+
+### App Router 怎么实现三种模式
+
+没有 `getServerSideProps`。默认尽量静态；你用了「请求来了才知道的东西」，这条路由就变成动态。
+
+**SSR（动态渲染）** 常见触发：
+
+- `cookies()` / `headers()` / `draftMode()`
+- 读请求期的 `searchParams`
+- `fetch(url, { cache: "no-store" })` 或 `{ next: { revalidate: 0 } }`
+- `export const dynamic = "force-dynamic"`
+- `export const revalidate = 0`
+
+请求来了才跑 Server Component。效果约等于 Pages 的 `getServerSideProps`，数据写在组件里，不经过 `props`。
+
+**SSG（静态渲染）**：构建时把该路由的服务器组件跑完，结果放进 **Full Route Cache**。动态段用 `generateStaticParams` 列出 id。也可以 `export const dynamic = "force-static"` 强制静态（构建时拿不到真实 cookie）。
+
+Next 15 起，`fetch` **默认不缓存**。想静态住，要显式：
+
+```ts
+await fetch(url, { cache: "force-cache" });
+// 或
+export const dynamic = "force-static";
+```
+
+**ISR**：给静态结果设寿命。
+
+```ts
+export const revalidate = 60; // 整条路由 60 秒
+
+await fetch(url, { next: { revalidate: 60 } }); // 这一次 fetch
+await fetch(url, { next: { tags: ["posts"] } });
+```
+
+到期行为与 Pages 相同：先旧后新（stale-while-revalidate）。主动失效：
+
+```ts
+import { revalidatePath, revalidateTag } from "next/cache";
+revalidatePath("/blog");
+revalidateTag("posts");
+```
+
+| | Pages | App |
+|---|---|---|
+| SSR | `getServerSideProps` | `cookies` / `no-store` / `force-dynamic` |
+| SSG | `getStaticProps` + `getStaticPaths` | 构建时静态渲染 + `generateStaticParams` |
+| ISR | `revalidate: 60` | `export const revalidate` 或 `fetch` 的 `next.revalidate` |
+| 主动刷新 | `res.revalidate` | `revalidatePath` / `revalidateTag` |
+| 数据放哪 | `props` | 组件里直接 `await` |
+
+选型：和 cookie / 当前用户强相关 → SSR；几乎不变 → SSG；大家看同一份、过几分钟可以旧 → ISR。App 可以把「外壳静态、一块动态」拆开，靠 `Suspense`；Pages 很难做到这么细。
+
+### 四层缓存（App Router 最容易踩的原理）
+
+从里到外：
+
+| 层 | 活多久 | 干什么 |
+|---|---|---|
+| **Request Memoization** | 一次请求内 | 同一 `fetch` 调用多次只打网络一次，避免 layout 和 page 重复取 |
+| **Data Cache** | 跨请求、跨用户（存在服务器） | 被缓存的 `fetch` / `unstable_cache` 结果 |
+| **Full Route Cache** | 跨请求 | 静态路由整页的 RSC 载荷 + HTML |
+| **Router Cache** | 浏览器里，按用户 | 客户端导航过的页面片段，返回上一页很快 |
+
+开发时你改代码立刻能看到，是因为 dev 基本绕过了 Data Cache / Full Route Cache。生产才会「为什么我改了 CMS，页面还是旧的」。
+
+让缓存失效，要用对层：`cache: "no-store"` 影响 Data Cache；`dynamic = "force-dynamic"` 让路由不进 Full Route Cache；`router.refresh()` 动的是当前这一次的服务器树，也会让客户端 Router Cache 认为过期。
+
+`cookies()` 一旦在渲染路径上被调用，Next 认为输出和用户有关，**整条路不能当全站静态页缓存**。这就是「我只是读了一下 cookie，页就变成 Dynamic」的原因。
+
+### 部分预渲染（PPR，进阶）
+
+想法：壳在构建时静态生成，`Suspense` 包住的洞请求时再补。开启后，静态壳和动态洞可以在同一路由共存。还在演进，用之前看当前 Next 大版本文档。对原理的意义是：App Router 的目标不是整页三选一，而是**按组件粒度**决定静态还是动态。
+
+---
+
+## 进阶用法
+
+### 流式渲染和 `loading.tsx`
+
+`loading.tsx` = 这一段自动包一层 `Suspense`。慢的取数不要堵住整页：外壳先出来，慢的块自己转圈。
+
+```tsx
+// app/dashboard/page.tsx
+import { Suspense } from "react";
+
+export default function Page() {
+  return (
+    <>
+      <h1>面板</h1>
+      <Suspense fallback={<p>加载图表…</p>}>
+        <Chart />
+      </Suspense>
+    </>
+  );
+}
+
+async function Chart() {
+  const data = await getSlowChart();
+  return <pre>{JSON.stringify(data)}</pre>;
+}
+```
+
+`Chart` 是服务器组件也可以。关键是它被 `Suspense` 边界隔开，Next 才能分段把 HTML 流给浏览器。
+
+### Server Actions
+
+把「提交表单」写成服务器上的函数，不必自己再开一个 POST 接口。文件或函数上标 `'use server'`。
+
+```tsx
+// app/actions.ts
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+export async function createPost(formData: FormData) {
+  const title = String(formData.get("title") ?? "");
+  await db.posts.create({ title }); // 只在服务器跑
+  revalidatePath("/posts");
+}
+```
+
+```tsx
+// app/posts/new/page.tsx  可以是服务器组件
+import { createPost } from "../actions";
+
+export default function Page() {
+  return (
+    <form action={createPost}>
+      <input name="title" />
+      <button type="submit">发布</button>
+    </form>
+  );
+}
+```
+
+原理简述：构建时这个函数被编成一个加密 ID。浏览器提交时 POST 到当前路由，带上这个 ID 和 FormData；服务器校验后来跑函数。所以：
+
+- **不能把敏感逻辑的「能不能跑」只藏在前端。** 函数导出了，知道 ID 就能 POST。权限必须在 Action 里面查 session。
+- 返回值要能序列化。
+- 需要乐观更新、pending 状态时，客户端用 `useTransition` / `useFormStatus` / `useActionState`。
+
+适合表单、增删改。长任务、给第三方的稳定 REST，仍用 Route Handler 或独立后端。
+
+### Route Handler
+
+`app/api/hello/route.ts`：
+
+```ts
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({ ok: true });
+}
+
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  return NextResponse.json(body, { status: 201 });
+}
+```
+
+导出 `GET` `POST` `PUT` `PATCH` `DELETE` `HEAD` `OPTIONS`。需要读 cookie、设 cookie、流式响应都可以。默认跑 Node runtime；`export const runtime = "edge"` 改到 Edge（更快的冷启动，API 更少，没有完整 Node）。
+
+WebHook、给移动端的 JSON、SSE、文件上传，用 Handler。页面表单优先 Action。
+
+### Middleware
+
+```ts
+// middleware.ts  项目根
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get("session")?.value;
+  if (!token && req.nextUrl.pathname.startsWith("/admin")) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/admin/:path*"],
+};
+```
+
+它跑在 **Edge**，在匹配到页面 / Handler **之前**。适合：跳转、改写路径、地理分流、读 cookie 做门禁。
+
+不要在这里连数据库、跑重逻辑。没匹配的静态文件最好用 `matcher` 排除，否则每个图片请求都跑一次。**门禁不是鉴权**：middleware 能骗过跳转，真假仍要在 Server Component / Action / Handler 里再查一次。
+
+### Metadata 和 SEO
+
+```tsx
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "文档",
+  description: "…",
+};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  return { title: post.title };
+}
+```
+
+根 layout 的 `metadata` 是默认值，子路由可以覆盖。动态数据用 `generateMetadata`。另外还有 `sitemap.ts`、`robots.ts`、`opengraph-image.tsx` 这些约定文件。
+
+### 图片和字体
+
+```tsx
+import Image from "next/image";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
+
+<Image src="/hero.png" alt="" width={800} height={400} />
+```
+
+`next/image` 会按设备切尺寸、懒加载、防止布局撑开。远程图片要把域名加到 `next.config` 的 `images.remotePatterns`。字体在构建时下载，减少布局跳动。
+
+### 平行路由和拦截路由（知道能干什么即可）
+
+- 平行路由 `@folder`：布局里多个 `children` 槽，例如 `@modal` 和主内容同时渲染。适合仪表盘多栏、模态框保背后页面。
+- 拦截路由 `(.)photo`、`(..)photo`：在当前导航栈里「拦截」到另一条路由，硬刷新则走真正的页面。适合列表里点开图片模态，刷新后是独立图片页。
+
+写法细、边角多，用到再查官方表。面试能说出「同一布局多槽」和「软导航拦截」就够。
 
 ---
 
 ## 常用场景
 
-**商品列表 / 详情。** 服务器组件 `fetch` FastAPI。首屏 HTML 里已经有名字和价格，不必先白屏再转圈。价格、库存以接口为准，不要写死在页面里。
+**内容站 / 文档 / 博客。** `generateStaticParams` + 默认静态，或 `revalidate` 做 ISR。Markdown / CMS 取数放在服务器组件。标题用 `generateMetadata`。
 
-**购买按钮。** 小的 `'use client'` 组件，点了 `POST /orders`。成功、没货（看 409 / 400）、被限流（429）分别提示。不要在按钮里写 SQL。
+**和当前用户有关的后台。** `cookies()` 读 session，路由会动态渲染。列表 `cache: "no-store"`。权限不够 `redirect` / `notFound`。
 
-**生成详情打字机。** 客户端组件用 `EventSource`（浏览器自带的 SSE 客户端）：
+**列表很少变、详情能接受几分钟延迟。** 列表 SSG，详情 ISR（`revalidate: 60` 或 tag）。CMS 发文后 `revalidateTag("posts")`。
 
-```tsx
-"use client";
+**表单增删改。** Server Action + `<form action={fn}>`，结束 `revalidatePath`。需要立刻反馈再用 `useFormStatus`。
 
-import { useState } from "react";
+**给别的客户端 JSON、WebHook、SSE。** Route Handler。SSE 用 `ReadableStream` 推 `text/event-stream`；浏览器用 `EventSource` 接，接的那侧必须是客户端组件。
 
-export function GenButton({ id }: { id: number }) {
-  const [text, setText] = useState("");
+**登录门禁。** 登录接口种 **httpOnly cookie**（JS 读不到，比 `localStorage` 存 token 稳）。`middleware` 拦明显未登录的跳转；Server Action / Handler 里再验一次。
 
-  function start() {
-    const es = new EventSource(
-      `${process.env.NEXT_PUBLIC_API_URL}/products/${id}/gen/stream`
-    );
-    es.onmessage = (e) => {
-      if (e.data === "[DONE]") es.close();
-      else setText((t) => t + e.data);
-    };
-    es.onerror = () => es.close();
-  }
+**BFF。** 浏览器不直打多个内部服务，由 Server Component 或 Route Handler 在服务器聚合。密钥留在服务器。
 
-  return (
-    <>
-      <button onClick={start}>生成详情</button>
-      <p>{text}</p>
-    </>
-  );
-}
-```
-
-SSE 必须在浏览器里接，所以这个组件是 Client。接口怎么推，见 [FastAPI](../fastapi/FastAPI.md)。
-
-**RAG 上传。** `<input type="file">` 放在 Client 组件里。用 `FormData` `POST /rag/files`。大文件不要先转成 Base64 塞进 JSON。进度条用 `xhr` 或支持进度的库；上传成功后页面只展示 MySQL 里的状态（解析中 / 完成），切片在后端做。
-
-**登录门禁。** 登录接口在 FastAPI，成功后把 httpOnly cookie 种下（JS 偷不到，比 `localStorage` 存 token 稳）。Next.js 的 `middleware.ts` 可以拦「没登录就进后台」，但**真假仍以 FastAPI 校验为准**，页面门禁只是少一次跳转。
-
-**不要用 Next.js Route Handler 当主后端。** `app/api/.../route.ts` 能写接口，练手可以。主业务（下单、RAG、生成）放 FastAPI，Python 生态接模型和 MySQL 更顺，也避免密钥进前端仓库。
+**何时不要把核心后端写在 Next。** 多端共用同一套 API、长时间任务、复杂事务、特定语言生态（例如 Python 模型）——独立后端更干净。Next 仍做页面和 BFF。
 
 ---
 
 ## 不用 Next.js 的痛点，以及怎么解决
 
-**纯 Vite + React，每个页面自己 `useEffect` 拉数据。** 首屏是空的，搜索引擎也看不见商品名。列表和详情改成服务器组件里 `fetch`，HTML 直接带数据。
+**Vite SPA，首屏空白、SEO 差。** 展示页改成服务器组件取数，HTML 带正文。纯操作台、必须登录才看得见的后台，CSR 也可以，不必神化 SSR。
 
-**整个项目第一行都是 `'use client'`。** 等于没用上服务器组件，密钥更容易漏，包也更大。默认服务器，只有按钮、输入、SSE 才拆成 Client 小组件。
+**整个 `app/` 第一行都是 `'use client'`。** RSC 形同虚设，包变大，密钥更容易漏。默认服务器，只把交互拆成叶子。
 
-**页面里写 `mysql.query`。** 数据库密码会进前端构建。页面只打 FastAPI。
+**改了数据页面还是旧的。** 生产有 Data Cache / Full Route Cache / Router Cache。写路径上要 `revalidatePath` / `revalidateTag`；读路径不要误用 `force-cache`。Next 15 默认 `fetch` 不缓存，Next 14 默认缓存，版本不同行为不同，先看构建日志里这条路由是 Static 还是 Dynamic。
 
-**浏览器 `fetch('http://127.0.0.1:8000')` CORS 报错。** FastAPI 加 CORS；或者改成服务器组件 fetch（不经过浏览器）。开发时两种都会用到：首屏走服务器，点击走浏览器。
+**只读了一个 cookie，全页变成动态。** 把读 cookie 的逻辑缩到最小的动态子树，外面用 `Suspense` 隔开；能静态的壳不要放进同一个无边界组件。
 
-**`NEXT_PUBLIC_` 把模型 Key 写进去了。** 用户打开源码就能抄走。Key 只放 FastAPI 所在机器的环境变量。
+**hydration mismatch。** 服务器和浏览器第一帧必须同一份 HTML。随机数、当前时间、`window` 相关 UI 放到客户端，并在 effect 后出现。
 
-**SSE 用普通 `fetch` 然后 `res.json()`。** 会等全部结束才有结果，没有打字机。用 `EventSource`，或 `fetch` + `res.body.getReader()` 逐块读。
+**`NEXT_PUBLIC_` 泄露密钥。** 能不公开就不公开。浏览器只拿它真正要打的那个公网 API。
 
-**大 PDF 先读成字符串再 POST JSON。** 内存和体积都炸。`FormData` 直传文件。
+**middleware 里连数据库。** Edge 限制多、超时短、每个请求都跑。middleware 只做分流和粗门禁。
 
-**hydration 报错（服务器 HTML 和浏览器对不上）。** 常见原因：服务器和浏览器时间、随机数不一致，或把只能在浏览器用的 `window` 写进了服务器组件。依赖 `window` 的逻辑放进 `'use client'`，或 `useEffect` 里再跑。
+**Server Action 里不鉴权。** 函数 ID 可被调用。权限查 session，不要以为「页面上没按钮」就是安全。
 
-一条判断标准：这是 **给人看、要点的**，放 Next.js；这是 **规则、校验、落盘**，放 FastAPI / MySQL。
+**客户端组件里 import 了 Node 的 `fs` / ORM。** 边界反了。数据访问放服务器文件，只把普通数据当 props 往下传。
+
+一条判断标准：这是 **路由、HTML 什么时候拼、哪些 JS 进浏览器**，用 Next；这是 **长期数据、跨端 API、重活**，用数据库和真正的后端。
 
 ---
 
 ## 常见面试题
 
-**App Router 和 Pages Router 有什么不同？**
+**App Router 和 Pages Router 的本质差别？**
 
-Pages 是旧的 `pages/` 目录，默认在服务器渲染页面组件。App Router 是 `app/`，默认 Server Component，可以在服务器把数据取完再输出 HTML，用 `'use client'` 点名哪些要进浏览器。新项目用 App Router。
+目录约定不同，更关键的是执行模型：App 默认 Server Component，可以按组件决定代码在不在浏览器；Pages 是页面级数据函数 + 默认客户端组件。布局、loading、流式是 App 原生的。
 
-**什么是 Server Component？为什么默认用它？**
+**RSC 和 SSR 是一回事吗？**
 
-只在服务器跑的 React 组件，可以安全地用内部地址 `fetch` FastAPI，不会把密钥打进 JS 包。没有点击、没有输入的展示页都该是它。
+不是。RSC = 组件在服务器执行、代码可以不进 bundle。SSR = 服务器输出 HTML。App Router 里两者常一起用：服务器跑 RSC，同时输出 HTML 做首屏。
 
-**SSR / SSG / CSR 人话怎么说？**
+**SSR / SSG / ISR 在两套路由里怎么实现？**
 
-- CSR：浏览器先下载空壳再拉数据（传统 SPA）
-- SSR：每次请求在服务器现拼 HTML（商品详情、后台列表用 `cache: "no-store"`）
-- SSG：构建时就拼好静态 HTML（几乎不变的介绍页）
+Pages：`getServerSideProps` / `getStaticProps` / `revalidate`。App：动态函数与 `no-store` 触发 SSR；构建时静态 + `generateStaticParams` 做 SSG；`revalidate` 或 `next.revalidate` 做 ISR。App 还可以 `revalidateTag`。
 
-Next.js 里这些是按页面、按 `fetch` 缓存策略来选的，不是全站只能选一个。
+**为什么调用 `cookies()` 页面就不能静态？**
 
-**为什么不能把 MySQL 密码放 `NEXT_PUBLIC_`？**
+输出依赖这份请求的 cookie，不能拿「构建时那一份」给所有人用。Full Route Cache 不能收这条路由。
 
-带这个前缀的变量会进浏览器。密码、内部 Redis 地址、模型 Key 只放服务器环境变量，由 FastAPI 使用。
+**四层缓存分别挡什么？**
 
-**页面调 FastAPI，CORS 什么时候会出现？**
+请求内去重；跨请求的 `fetch` 结果；整页静态产出；浏览器里的客户端导航缓存。生产环境「页面不更新」多半卡在后三层。
 
-只有**浏览器**从一个源（3000）去打另一个源（8000）才会。服务器组件在 Node 里 fetch 8000，没有 CORS。所以首屏走服务器，按钮走浏览器时才要 FastAPI 开 CORS。
+**Server Action 安全吗？**
 
-**SSE 为什么要 `'use client'`？**
+传输有加密 ID，但不是权限系统。必须在 Action 内鉴权。适合表单，不适合当对外稳定 API。
 
-`EventSource` 是浏览器 API，连接要挂在用户电脑上才能把字一个个画出来。服务器组件跑完就结束，不能替用户挂着这条长连接。
+**middleware 能替代登录校验吗？**
 
-**Next.js 能不能当后端？什么时候不要？**
+不能。它能减少未登录用户进页，真数据仍要在服务器渲染或 Action 里校验。它还跑在 Edge，不适合重逻辑。
 
-能，Route Handler 可以写接口。下单、RAG、调模型这些主业务更适合 FastAPI：校验、文档、Python 库、和 MySQL 事务都在那边。Next.js 当页面和 BFF（偶尔聚合一下）即可。
+**什么必须 `'use client'`？**
+
+状态、事件、浏览器 API。没有这些就留在服务器。`'use client'` 是模块边界，不是「这个函数是客户端」。
+
+**hydration 是什么？失败会怎样？**
+
+浏览器把已有 HTML 和 React 组件树接起来，复用 DOM，挂上事件。对不上就报 mismatch，常见于服务器/浏览器第一帧不一致。
+
+**新项目为什么默认 App Router？**
+
+嵌套布局、流式、RSC 减包、缓存和动态可以细到组件。Pages 不是错的，迁移成本大时不必为了新而迁。
