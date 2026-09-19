@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AI全栈路线/nextjs/Nextjs.md",
+                "file": "AI全栈路线/fastapi/FastAPI.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Nextjs"
+              "title": "FastAPI"
             }
           }
         ]
@@ -99,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "AI全栈路线/nextjs/Nextjs.md",
+                "file": "AI全栈路线/fastapi/FastAPI.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "AI全栈路线/nextjs/Nextjs.md",
+                "file": "AI全栈路线/fastapi/FastAPI.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "AI全栈路线/nextjs/Nextjs.md",
+                "file": "AI全栈路线/fastapi/FastAPI.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -190,8 +190,8 @@
   },
   "active": "9fd3cd85efa435e7",
   "lastOpenFiles": [
-    "AI全栈路线/fastapi/FastAPI.md",
     "AI全栈路线/nextjs/Nextjs.md",
+    "AI全栈路线/fastapi/FastAPI.md",
     "AI全栈路线/docker/Docker.md",
     "AI全栈路线/数据库/事务/事务.md",
     "AI全栈路线/数据库/索引/索引.md",

@@ -35,7 +35,7 @@ Next.js 是 Vercel 做的 React 框架，把网站缺的那一层补上：
 
 ## 重要概念
 
-真正要建立的不是一堆 API 名，而是下面这几组。会了这些，文档里的开关才知道在动哪一层。建议顺序：**约定文件 → 服务器 / 客户端边界 → SSR / SSG / ISR / RSC → RSC payload → 四层缓存 → Action / Handler。**
+真正要建立的不是一堆 API 名，而是下面这几组。会了这些，文档里的开关才知道在动哪一层。建议顺序：**约定文件 → 服务器 / 客户端边界 → SSR / SSG / ISR / RSC → RSC payload → 流式 → 四层缓存 → Action / Handler。**
 
 | 概念 | 人话 | 后文 |
 |---|---|---|
@@ -47,7 +47,7 @@ Next.js 是 Vercel 做的 React 框架，把网站缺的那一层补上：
 | CSR / SSR / SSG / ISR / RSC | 谁取数、何时拼 HTML、组件在哪跑。RSC 不是 SSR 的别名 | 渲染、缓存和原理 |
 | **RSC payload** | 服务器树的 UI 描述（Flight 协议），给 React 看，不是给人看的 HTML | 下面原理节 |
 | 四层缓存 | 请求内去重、fetch 的 JSON、整页成品、浏览器里的切页缓存。不是一个开关 | 四层缓存 |
-| 流式 | `loading.tsx` / `Suspense`：外壳先出去，慢的块后补一段 payload | 进阶 |
+| 流式 | 不是另一种渲染。RSC 长树，payload 运树，流式按边界分段寄 | 原理：一条流水线 |
 | Server Action | `'use server'`，表单提交跑服务器函数；里面必须鉴权，结束要失效缓存 | 进阶 |
 | Route Handler | `route.ts`，给 JSON / WebHook / SSE，不是页面 | 进阶 |
 | Middleware | 命中页之前改写或跳转，跑在 Edge，不是鉴权本身 | 进阶 |
@@ -278,11 +278,37 @@ payload 里有：服务器组件已经跑完的输出（标签、文字、结构
 
 **第一次打开 vs 点 `<Link>`。** 第一次：服务器既拼 HTML（人能看），也带 payload（React 能接）。之后点 `<Link>`：通常不再要整份 HTML，只拉这次导航对应的 payload，用它换掉一棵子树。Router Cache 缓存的主要就是这些片段；Full Route Cache 在服务器上存的，是 HTML + 这份 payload 的成品。硬刷新走 HTML + payload；`<Link>` 回来还是旧的，多半是浏览器里这份 payload 的缓存。
 
-**和流式的关系。** `Suspense` / `loading.tsx` 不是先把整份 payload 做完再寄。外壳先流出去（一段 HTML + 一段 payload），慢的那一块跑完再补一段。PPR（部分预渲染）同一思路：静态壳的 payload 构建时就有，动态洞请求时再补。
-
 不懂 payload，这几件事会对不上：服务器组件为什么能读密钥、代码却不进浏览器；为什么不能把函数当 props 传给客户端组件；四层缓存里 Full Route Cache / Router Cache 缓存的到底是什么；为什么切页很快、不一定重新要整页 HTML。
 
 hydration 报错（「Text content does not match」）= 服务器吐出的 HTML 和浏览器第一轮渲染对不上。典型原因：用了 `Date.now()`、`Math.random()`、`window` 在服务器组件里，或本地和服务器时区不一致。依赖浏览器的值放进 `'use client'`，并且在 `useEffect` 之后再写到画面上。
+
+### RSC、payload、流式：一条流水线
+
+这三件是一条流水线上的三步，不是并列的三种渲染。
+
+**RSC 是在哪跑。** Server Component 在服务器执行：取数、读密钥、拼树。跑完之后，函数源码不会进浏览器。RSC 回答的是「这棵树的哪些部分根本不用下载 JS」。它还不是「发给你什么」，也还不是「一次发完还是分段发」。
+
+**RSC payload 是跑完之后那一包。** 服务器寄一份 UI 描述（Flight 协议）：树长什么样、哪些洞是客户端组件、洞里的 props 是什么。同一响应里通常还有 HTML（给人立刻看）和客户端 JS（只给 `'use client'` 的叶子做 hydration）。没有 payload，浏览器就不知道服务器那棵树，也就没法在不下载服务器代码的情况下更新 UI。点 `<Link>` 切页，通常不再要整份 HTML，只拉一份新的 payload 换子树。
+
+| | 角色 |
+|---|---|
+| RSC | 执行模型：组件在服务器跑 |
+| RSC payload | 运输格式：跑完的树怎么描述给 React |
+| HTML | 给人看的首屏 |
+| 客户端 JS | 给带交互的叶子接事件 |
+| 流式 | 寄送方式：一次寄完，还是按边界分段寄 |
+
+**流式渲染是这包怎么寄。** 可以等整棵树全部跑完，再一次性寄 HTML + 整份 payload。慢的 `await` 会堵住整页：用户一直白屏。流式是：**别等齐，先寄已经好的部分。** `loading.tsx` / `Suspense` 就是边界：外壳（layout、标题、先完成的块）先变成一段 HTML + 一段 payload 流出去；慢的那一块还在服务器 `await`，跑完再补下一段 payload，浏览器把洞填上。
+
+所以：
+
+1. RSC 决定 **谁在服务器跑**
+2. payload 决定 **跑完用什么格式告诉 React**
+3. 流式决定 **这份 payload 是一次寄完，还是按 Suspense 边界分段寄**
+
+PPR（部分预渲染）是同一条线再拆一刀：静态壳的 payload 构建时就有，动态洞请求时再流一段进来。没有 RSC，就没有这种「服务器树的增量 payload」；没有 payload，流式就只是传统 SSR 往外吐 HTML，客户端无法按组件树补洞。
+
+最短句：RSC 在服务器长树 → 树被编码成 payload → 流式按边界把 payload 一段一段推给浏览器。
 
 ### Pages Router 怎么实现三种模式
 
@@ -507,7 +533,7 @@ async function Chart() {
 }
 ```
 
-`Chart` 是服务器组件也可以。关键是它被 `Suspense` 边界隔开，Next 才能分段把 HTML 流给浏览器。
+`Chart` 是服务器组件也可以。关键是它被 `Suspense` 边界隔开，Next 才能分段把 HTML **和 RSC payload** 流给浏览器。原理见上面「RSC、payload、流式」。
 
 ### Server Actions
 
@@ -696,6 +722,10 @@ const inter = Inter({ subsets: ["latin"] });
 **RSC payload 里有什么？为什么 props 必须能序列化？**
 
 有服务器组件已经跑完的输出，加上客户端组件的占位和 props。没有服务器函数源码，没有密钥。payload 只能带得动能编码的值，所以函数、Class 不能当 props 传给客户端组件。
+
+**RSC、RSC payload、流式渲染是什么关系？**
+
+不是并列的三种渲染。RSC 决定谁在服务器跑；payload 是跑完告诉 React 的 UI 描述；流式决定这份 payload 一次寄完还是按 `Suspense` 边界分段寄。没有 RSC 就没有这种增量 payload；没有 payload，流式就只是传统 SSR 吐 HTML。
 
 **SSR / SSG / ISR 在两套路由里怎么实现？**
 
