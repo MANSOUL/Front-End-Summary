@@ -243,13 +243,13 @@ export default async function Page() {
 
 这是 Next 和「Vite + React」分道的地方。先分清三个经常被混在一起的词：
 
-| 词 | 人话 |
-|---|---|
-| **CSR** | 浏览器拿到空壳 JS，自己取数、自己画 |
-| **SSR** | **每个请求**在服务器把组件跑成 HTML，再发给浏览器 |
-| **SSG** | **构建时**跑一遍，HTML 写到磁盘，请求只是把文件发出去 |
-| **ISR** | 先当 SSG；过期后后台再生成，期间可以继续用旧 HTML |
-| **RSC** | React Server Components：组件在服务器执行。它不是 SSR 的别名 |
+| 词               | 人话                                                       |
+| --------------- | -------------------------------------------------------- |
+| **CSR**         | 浏览器拿到空壳 JS，自己取数、自己画                                      |
+| **SSR**         | **每个请求**在服务器把组件跑成 HTML，再发给浏览器                            |
+| **SSG**         | **构建时**跑一遍，HTML 写到磁盘，请求只是把文件发出去                          |
+| **ISR**         | 先当 SSG；过期后后台再生成，期间可以继续用旧 HTML                            |
+| **RSC**         | React Server Components：组件在服务器执行。它不是 SSR 的别名             |
 | **RSC payload** | 跑完之后发给客户端的那份 UI 描述（Flight 协议）。HTML 给人看，payload 给 React 看 |
 
 RSC 解决的是「哪些组件的代码根本不用进浏览器」。SSR 解决的是「首屏 HTML 谁来拼」。**payload 是 RSC 的运输格式**：没有它，浏览器不知道服务器那棵树，也就没法在不下载服务器组件源码的情况下更新 UI。两者经常一起出现：服务器跑 Server Component → 吐 HTML（SSR）+ 一份 payload → 浏览器只对标了 `'use client'` 的部分做 **hydration**（把已有 HTML 接上事件和 state）。
