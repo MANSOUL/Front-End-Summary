@@ -37,21 +37,21 @@ Next.js 是 Vercel 做的 React 框架，把网站缺的那一层补上：
 
 真正要建立的不是一堆 API 名，而是下面这几组。会了这些，文档里的开关才知道在动哪一层。建议顺序：**约定文件 → 服务器 / 客户端边界 → SSR / SSG / ISR / RSC → RSC payload → 流式 → 四层缓存 → Action / Handler。**
 
-| 概念 | 人话 | 后文 |
-|---|---|---|
-| Next 补了什么 | React 管 UI 怎么画；Next 管网址对应文件、组件默认在哪执行、HTML 什么时候拼 | 是什么 |
-| App Router | 新项目默认 `app/`。默认 Server Component，按组件决定代码进不进浏览器 | 基础用法 |
-| 约定文件 | 文件夹就是 URL，有 `page.tsx` 才是页面；layout / loading / error 是这一段的外壳和兜底 | 约定文件 |
-| Server vs Client | 默认服务器；`useState` / `onClick` / `window` 才 `'use client'`。这是模块边界 | 服务器组件 |
-| 请求期 vs 构建期 | cookie、问号参数是这次请求才知道的，路由会变动态；所有人看同一份才能 SSG / ISR | 三种模式、读 cookie |
-| CSR / SSR / SSG / ISR / RSC | 谁取数、何时拼 HTML、组件在哪跑。RSC 不是 SSR 的别名 | 渲染、缓存和原理 |
-| **RSC payload** | 服务器树的 UI 描述（Flight 协议），给 React 看，不是给人看的 HTML | 下面原理节 |
-| 四层缓存 | 请求内去重、fetch 的 JSON、整页成品、浏览器里的切页缓存。不是一个开关 | 四层缓存 |
-| 流式 | 不是另一种渲染。RSC 长树，payload 运树，流式按边界分段寄 | 原理：一条流水线 |
-| Server Action | `'use server'`，表单提交跑服务器函数；里面必须鉴权，结束要失效缓存 | 进阶 |
-| Route Handler | `route.ts`，给 JSON / WebHook / SSE，不是页面 | 进阶 |
-| Middleware | 命中页之前改写或跳转，跑在 Edge，不是鉴权本身 | 进阶 |
-| 环境变量 | 没 `NEXT_PUBLIC_` 的只有服务器看得见 | 基础用法 |
+| 概念                          | 人话                                                              | 后文            |
+| --------------------------- | --------------------------------------------------------------- | ------------- |
+| Next 补了什么                   | React 管 UI 怎么画；Next 管网址对应文件、组件默认在哪执行、HTML 什么时候拼                 | 是什么           |
+| App Router                  | 新项目默认 `app/`。默认 Server Component，按组件决定代码进不进浏览器                  | 基础用法          |
+| 约定文件                        | 文件夹就是 URL，有 `page.tsx` 才是页面；layout / loading / error 是这一段的外壳和兜底 | 约定文件          |
+| Server vs Client            | 默认服务器；`useState` / `onClick` / `window` 才 `'use client'`。这是模块边界 | 服务器组件         |
+| 请求期 vs 构建期                  | cookie、问号参数是这次请求才知道的，路由会变动态；所有人看同一份才能 SSG / ISR                 | 三种模式、读 cookie |
+| CSR / SSR / SSG / ISR / RSC | 谁取数、何时拼 HTML、组件在哪跑。RSC 不是 SSR 的别名                               | 渲染、缓存和原理      |
+| **RSC payload**             | 服务器树的 UI 描述（Flight 协议），给 React 看，不是给人看的 HTML                    | 下面原理节         |
+| 四层缓存                        | 请求内去重、fetch 的 JSON、整页成品、浏览器里的切页缓存。不是一个开关                        | 四层缓存          |
+| 流式                          | 不是另一种渲染。RSC 长树，payload 运树，流式按边界分段寄                              | 原理：一条流水线      |
+| Server Action               | `'use server'`，表单提交跑服务器函数；里面必须鉴权，结束要失效缓存                        | 进阶            |
+| Route Handler               | `route.ts`，给 JSON / WebHook / SSE，不是页面                          | 进阶            |
+| Middleware                  | 命中页之前改写或跳转，跑在 Edge，不是鉴权本身                                       | 进阶            |
+| 环境变量                        | 没 `NEXT_PUBLIC_` 的只有服务器看得见                                      | 基础用法          |
 
 判断标准：这是 **路由、HTML 什么时候拼、哪些 JS 进浏览器**，用 Next；这是 **长期数据、跨端 API、重活**，用数据库和真正的后端。
 
