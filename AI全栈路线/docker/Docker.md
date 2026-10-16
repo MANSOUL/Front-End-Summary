@@ -6,6 +6,87 @@
 
 ---
 
+## 原理
+
+Docker 的本质不是“轻量级虚拟机”，而是利用 Linux 内核能力，把宿主机上的一个进程包装成看起来像独立机器的容器。一句话：Namespace 做隔离，Cgroups 做限制，UnionFS 做镜像分层，OCI 做标准运行时。
+
+1. 三大内核基石
+
+· Namespace：隔离视图
+  让容器里的进程看不到宿主机和其他容器的资源。常见类型：
+  · pid：独立进程树
+  · net：独立网络栈、网卡、端口
+  · mnt：独立文件系统挂载点
+  · uts：独立 hostname
+  · ipc：独立进程间通信
+  · user：独立用户和权限映射
+  · cgroup：独立 cgroup 视图
+· Cgroups：限制资源
+  控制 CPU、内存、磁盘 IO、进程数等。比如 --memory=512m、--cpus=1 就是通过 cgroup 实现的，防止单个容器耗尽宿主机资源。
+· UnionFS / OverlayFS：分层文件系统
+  Docker 镜像由多个只读层组成，每个 Dockerfile 指令生成一层。容器启动时，在只读层之上加一个可写层。读文件从上层往下找，写文件用写时复制，多个容器共享只读层，节省磁盘和内存。
+
+2. 镜像与容器
+
+· 镜像：只读模板，由多层组成，存在 Registry 里，可 pull/push。
+· 容器：镜像 + 可写层 + 运行配置。删除容器，可写层丢失；要持久化就用 Volume。
+· Dockerfile：每条指令生成一层，层可复用、可缓存。
+
+3. 架构与启动流程
+
+Docker 是 C/S 架构：
+
+```text
+docker CLI -> dockerd -> containerd -> containerd-shim -> runc
+```
+
+docker run 大致流程：
+
+1. CLI 请求 dockerd。
+2. dockerd 检查本地镜像，没有就去 Registry 拉。
+3. containerd 创建容器任务。
+4. runc 根据 OCI 标准：
+   · 创建 Namespace
+   · 设置 Cgroups
+   · 挂载 rootfs
+   · 执行 entrypoint
+5. containerd-shim 托管容器进程，即使 containerd 重启，容器也不受影响。
+
+6. 网络与存储
+
+· 网络：
+  · 默认 bridge：docker0 网桥 + veth pair + iptables NAT，容器通过端口映射对外服务。
+  · host：共享宿主机网络。
+  · none：无网络。
+  · overlay：跨主机通信，Swarm/K8s 常用。
+· 存储：
+  · volume：Docker 管理，持久化，推荐。
+  · bind mount：挂载宿主机目录。
+  · tmpfs：内存文件系统。
+
+5. 和虚拟机的区别
+
+ Docker 虚拟机
+隔离级别 进程级，共享宿主机内核 硬件级，独立 Guest OS
+启动速度 秒级/毫秒级 分钟级
+资源占用 小，密度高 大
+隔离强度 较弱，有逃逸风险 较强
+典型限制 macOS/Windows 需跑 Linux VM 直接跑
+
+6. 安全与限制
+
+容器共享内核，所以隔离不如 VM。生产上常加：
+
+· rootless Docker
+· User Namespace
+· seccomp、AppArmor/SELinux
+· 只读根文件系统
+· 最小权限、非 root 用户运行
+
+一句话
+
+“Docker 不是虚拟化，而是基于 Linux 内核的进程隔离。它用 Namespace 隔离视图，Cgroups 限制资源，UnionFS 实现镜像分层和写时复制。架构上是 CLI -> dockerd -> containerd -> runc，遵循 OCI 标准。容器就是镜像只读层上加一个可写层后运行的进程，网络靠 veth/bridge/iptables，持久化靠 volume。”
+
 ## 是什么，能做什么
 
 没有 Docker 时常见的场面：你电脑是 Python 3.12 + MySQL 8，同事是 3.10，服务器还没装 Redis。同一份代码，三台机器三种死法。
