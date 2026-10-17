@@ -30,9 +30,9 @@
 
 ## ES5 写法
 ### 创建组件
-#### React.createClass
-此方法接受一个配置对象，并返回一个创建后的React组件
-```
+#### React.createClass 此方法接受一个配置对象，并返回一个创建后的React组件
+
+```jsx
 var CountButton = React.createClass({
     //设置组件状态
     getInitialState: function() {
@@ -62,8 +62,10 @@ var CountButton = React.createClass({
 ```
 
 #### React.createElement
+
 实例化一个React组件
-```
+
+```jsx
 var countButtonElement = React.createElement(CountButton,null,null);
 
 ReactDOM.render(countButtonElement,document.getElementById('app'));
@@ -71,7 +73,8 @@ ReactDOM.render(countButtonElement,document.getElementById('app'));
 
 ## ES6
 ### 创建组件
-```
+
+```jsx
 import React,{Component} from 'react';
 import PropTypes from 'prop-types';
 
@@ -118,10 +121,13 @@ class CountButton extends Component{
 |componentWillUnmount       |组件从 DOM 中移除的时候立刻被调用             |
 
 初始化执行顺序：
+
 componentWillMount -> componentDidMount
 
 props更新执行顺序:
+
 componentWillReceiveProps -> shouldComponentUpdate -> componentWillUpdate -> componentDidUpdate
 
 state更新执行顺序:
+
 shouldComponentUpdate -> componentWillUpdate -> componentDidUpdate
